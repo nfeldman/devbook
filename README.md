@@ -60,10 +60,10 @@ shell changes load.
 - `kubectl`, `k9s` (cluster TUI), `helm`.
 
 **AI-forward**
-- **Ollama** — run LLMs locally (`ollama pull llama3.2`, `ollama run ...`). For later, as you noted.
-- **Claude Code** — Anthropic's agentic CLI. Run `claude` in any repo.
-- **aider** — terminal AI pair-programmer, installed isolated via `uv tool`.
-- **Zed** — fast, AI-native editor (optional; delete that line in `setup.sh` if you prefer VS Code / Cursor).
+- **Ollama** — run LLMs locally, vendor-free (`ollama pull qwen2.5-coder`, `ollama run ...`). Your sovereign default; see `MODELS.md`.
+- **Claude Code** — Anthropic's agentic CLI. Run `claude` in any repo. The one intentional vendor tool, balanced by keeping everything else local-capable.
+- **Zed** — fast, AI-native editor (its assistant can point at your local Ollama too).
+- No cloud-agent CLI (e.g. aider) is installed by default — add one later, pointed at Ollama first, if you want it. See `MODELS.md`.
 
 ## Recommended post-install steps
 
@@ -82,7 +82,7 @@ shell changes load.
    ```
 3. **mise**: run `mise doctor` to confirm it's wired up. Per project, `mise use node@22` etc. writes a `mise.toml`.
 4. **atuin** (optional): `atuin register` to sync/encrypt history across machines, or just use it locally.
-5. **Ollama**: `ollama pull llama3.2` (or `qwen2.5-coder`, `gemma3`) when ready.
+5. **Ollama**: `ollama pull qwen2.5-coder` (a local, vendor-free coding model; `:14b`/`:32b` if you have the RAM). See `MODELS.md`.
 6. **Claude Code**: run `claude` in a project and follow the login prompt.
 
 ## Per-project workflow (the modern flow)

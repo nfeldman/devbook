@@ -58,8 +58,8 @@ and supply the two secrets from your card when prompted.
 **Containers / DevOps**
 - OrbStack (Docker + local K8s) · kubectl · k9s · helm
 
-**AI-forward**
-- Ollama (local models) · Zed (editor) · Claude Code (npm global) · aider (uv tool)
+**AI-forward** (local-first — see `MODELS.md`)
+- Ollama (local, vendor-free runtime) · Zed (editor) · Claude Code (the one intentional vendor tool). No cloud-agent CLI installed by default.
 
 **Secrets / crypto**
 - age (file encryption) · 1password-cli (`op`, powers the vault-export escape hatch)

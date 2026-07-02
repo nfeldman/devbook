@@ -159,15 +159,10 @@ else
   warn "npm not on PATH yet — open a new shell and run: npm install -g @anthropic-ai/claude-code"
 fi
 
-# aider — terminal AI pair programmer, installed as an isolated uv tool
-if command -v uv >/dev/null 2>&1; then
-  if ! command -v aider >/dev/null 2>&1; then
-    info "Installing aider (uv tool install aider-chat)"
-    uv tool install aider-chat || warn "aider install failed"
-  else
-    ok "aider present"
-  fi
-fi
+# No cloud-agent tool installed by default (model sovereignty — see MODELS.md).
+# Ollama is your local, vendor-free runtime. Suggested coding model:
+#   ollama pull qwen2.5-coder        # add :14b or :32b if you have the RAM
+# Add a neutral agent later if you want one (e.g. aider), pointed at Ollama first.
 
 # ---------------------------------------------------------------------------
 bold "8/8  Wiring up dotfiles"
@@ -257,7 +252,7 @@ echo "Next steps:"
 echo "  1) Quit and reopen your terminal (or launch Ghostty)."
 echo "  2) Fonts: default is JetBrainsMono Nerd Font; the GRUE theme uses IosevkaTerm Nerd Font."
 echo "  3) Run 'mise doctor' and 'atuin register' (optional history sync)."
-echo "  4) 'ollama pull llama3.2' when you want a local model."
-echo "  5) 'claude' to start Claude Code in any project."
+echo "  4) 'ollama pull qwen2.5-coder' for a local, vendor-free coding model (see MODELS.md)."
+echo "  5) 'claude' to start Claude Code (the one intentional vendor tool) in any project."
 echo "  6) Cosmetics (opt-in): './grue/install-grue.sh' for the terminal theme,"
 echo "     './gruebook/install-gruebook.sh' for the system-wide Gruebook."
