@@ -20,10 +20,9 @@ warn() { printf "\033[1;33m !!\033[0m %s\n" "$1"; }
 
 DOTDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# Themes are OFF by default — setup installs tools + dotfiles, nothing cosmetic.
-# Opt in to the GRUE terminal theme:   APPLY_THEMES=1 ./setup.sh
-# (The system-wide "gruebook" — wallpaper, macOS accent — stays a separate,
-#  explicit step: ./gruebook/install-gruebook.sh)
+# Themes are OFF by default — setup installs tools + dotfiles, nothing cosmetic. Opt in:
+#   APPLY_THEMES=1   ./setup.sh   → GRUE terminal theme
+#   APPLY_THEMES=all ./setup.sh   → terminal theme + system-wide Gruebook (wallpaper, macOS accent)
 APPLY_THEMES="${APPLY_THEMES:-0}"
 
 # ---------------------------------------------------------------------------
@@ -232,16 +231,26 @@ else
   warn "shellcheck not on PATH yet; re-run to self-lint (or 'brew install shellcheck')."
 fi
 
-# --- Optional: apply the GRUE theme (default OFF) ------------------------------
-if [[ "$APPLY_THEMES" == "1" ]]; then
+# --- Optional: apply themes (default OFF) --------------------------------------
+# bash 3.2-safe (no ;;& fallthrough): plain ifs.
+if [[ "$APPLY_THEMES" == "1" || "$APPLY_THEMES" == "all" ]]; then
   if [[ -x "$DOTDIR/grue/install-grue.sh" ]]; then
-    bold "Applying GRUE theme (APPLY_THEMES=1)"
+    bold "Applying GRUE terminal theme (APPLY_THEMES=$APPLY_THEMES)"
     "$DOTDIR/grue/install-grue.sh" || warn "GRUE theme install reported an issue"
   else
-    warn "APPLY_THEMES=1 but $DOTDIR/grue/install-grue.sh is missing or not executable."
+    warn "grue/install-grue.sh is missing or not executable."
   fi
-else
-  ok "Themes not applied (default). Apply later:  ./grue/install-grue.sh   or   APPLY_THEMES=1 ./setup.sh"
+fi
+if [[ "$APPLY_THEMES" == "all" ]]; then
+  if [[ -x "$DOTDIR/gruebook/install-gruebook.sh" ]]; then
+    bold "Applying system-wide Gruebook (APPLY_THEMES=all)"
+    "$DOTDIR/gruebook/install-gruebook.sh" || warn "Gruebook install reported an issue"
+  else
+    warn "gruebook/install-gruebook.sh is missing or not executable."
+  fi
+fi
+if [[ "$APPLY_THEMES" != "1" && "$APPLY_THEMES" != "all" ]]; then
+  ok "Themes not applied (default). Terminal: APPLY_THEMES=1 ./setup.sh · everything: APPLY_THEMES=all ./setup.sh"
 fi
 
 echo ""
