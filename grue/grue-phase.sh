@@ -31,8 +31,8 @@ set_marked(){ # $1 file, $2 sed-ERE that captures pre/post around the value
 # Starship: palette line ->  grue = "#rrggbb"   # GRUE_ACCENT
 set_marked "$CFG/starship.toml" "s|^([[:space:]]*grue[[:space:]]*=[[:space:]]*\")#?[0-9a-fA-F]*(\".*# GRUE_ACCENT.*)$|\1${HEX}\2|"
 
-# Ghostty: cursor-color = #rrggbb   # GRUE_ACCENT
-set_marked "$CFG/ghostty/config" "s|^(cursor-color = )#?[0-9a-fA-F]*( *# GRUE_ACCENT.*)$|\1${HEX}\2|"
+# Ghostty: match the cursor-color key by name (Ghostty has no inline comments).
+set_marked "$CFG/ghostty/config" "s|^cursor-color = .*|cursor-color = ${HEX}|"
 
 # Zellij, bat, delta, eza, Zed stay STATIC (a single glass palette) — only the
 # Starship prompt accent is live, plus Ghostty's cursor on new windows. That's the
