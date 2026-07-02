@@ -11,9 +11,12 @@ only when you decide a task needs it.
 2. **Keep every tool swappable.** Prefer tools whose model is a config value (Zed's
    assistant, aider, most OpenAI-compatible clients) over tools wired to one vendor.
    Switching models should be an edit, never a reinstall.
-3. **Name the one deliberate exception.** **Claude Code** is Anthropic's own CLI — it is
-   vendor-bound by design. Keep it for its strengths, but the counterweight is that
-   everything else here can run local, so you are never *dependent* on any single vendor.
+3. **The one vendor-bound tool is temporary — and has a named exit.** **Claude Code**
+   (and the Claude desktop app) is Anthropic's own client, vendor-bound by design. It
+   stays only as a *temporary expedient*. The planned replacement is **Chorusmith** — a
+   self-built client that speaks the OpenAI-compatible protocol and assumes local or
+   OpenRouter, making the AI-client layer swappable like everything else. Documenting the
+   exit before it's built is the point: the lock-in is time-boxed, not accepted.
 4. **No cloud-agent CLI is installed by default.** `aider` was removed on purpose. If you
    ever want a neutral terminal agent, add it and point it at Ollama first (below).
 
@@ -62,3 +65,11 @@ reasoning — but the gap is smaller than it used to be, and it costs RAM, not m
 privacy. The sovereign move is to keep local as the **floor** you always have, and treat
 any cloud model as an **opt-in ceiling** you reach for deliberately — with the wiring
 already in place to swap it out the day a vendor changes terms, prices, or availability.
+
+## Trajectory
+
+The endgame for the AI-client layer is **Chorusmith** — a self-built, OpenAI-compatible
+client intended to replace the Claude desktop app (an early milestone of the project).
+Once it lands, the last vendor-bound piece here becomes swappable too: local by default,
+OpenRouter or any provider by choice, all behind the standard protocol. This file is the
+record of that intent — the exit designed before it's needed.
