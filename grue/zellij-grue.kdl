@@ -1,0 +1,17 @@
+// Zellij · GRUE theme  →  ~/.config/zellij/themes/grue.kdl
+// Static glass palette. In ~/.config/zellij/config.kdl set:  theme "grue"
+themes {
+    grue {
+        fg      "#1f2a2b"
+        bg      "#eef3f2"
+        black   "#1f2a2b"
+        red     "#c24a2c"   // ember
+        green   "#128f74"   // jade
+        yellow  "#b0913f"   // brass
+        blue    "#3f6f86"   // slate
+        magenta "#6e7993"   // pewter-violet (into slate)
+        cyan    "#2b8f86"   // verdigris
+        white   "#3a4a4c"
+        orange  "#c7853a"   // warm
+    }
+}

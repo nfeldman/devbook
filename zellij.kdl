@@ -1,0 +1,34 @@
+// Zellij config  →  ~/.config/zellij/config.kdl
+// Docs: https://zellij.dev/documentation/
+// Zellij is a terminal workspace: panes, tabs, and persistent sessions.
+
+// Keep the default keybinds (they show in the status bar — great while learning).
+// Override the theme + a few quality-of-life options below.
+
+theme "catppuccin-mocha"
+
+// Don't auto-attach; start fresh unless you `zellij attach`.
+session_serialization true
+
+// Copy to the macOS system clipboard.
+copy_command "pbcopy"
+copy_on_select true
+
+// Show the helpful keybind hint bar at the bottom.
+default_layout "compact"
+
+// Mouse support (click panes, scroll, select).
+mouse_mode true
+
+// Scrollback buffer.
+scroll_buffer_size 20000
+
+// --- Handy defaults you'll use constantly (default keybinds) -------------
+// Ctrl+p then n         → new pane
+// Ctrl+p then arrows    → move between panes
+// Ctrl+t then n         → new tab
+// Ctrl+o then d         → detach session (reattach later with `zellij attach`)
+// Ctrl+q                → quit
+//
+// Tip: add `zellij attach -c main` to your shell to auto-resume a "main"
+// session, or just run `zellij` for a fresh one.

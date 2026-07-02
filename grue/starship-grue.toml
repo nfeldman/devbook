@@ -1,0 +1,67 @@
+# Starship · GRUE  →  ~/.config/starship.toml
+# The prompt as a dashboard (Tufte): silent when clean, colour only on a delta.
+# The caret is the grue accent, rewritten through the day by grue-phase.sh.
+
+add_newline = true
+command_timeout = 1000
+palette = "grue"
+
+format = """
+$directory$git_branch$git_status$nodejs$python$golang$rust$cmd_duration
+$character"""
+
+[palettes.grue]
+# Accents deepened to read on the light glass ground.
+grue  = "#2b7fc4"   # GRUE_ACCENT  ← rewritten by grue-phase.sh; edit there, not here
+ink   = "#1f2a2b"
+dim   = "#7b9498"
+slate = "#3f6f86"
+brass = "#8a6f22"
+jade  = "#0f8a70"
+ember = "#bb4529"
+warm  = "#8a6a24"   # gentle attention — used for long command durations
+
+[character]
+success_symbol = "[❯](grue)"
+error_symbol   = "[❯](ember)"
+vimcmd_symbol  = "[❮](jade)"
+
+[directory]
+style = "slate"
+truncation_length = 3
+truncate_to_repo = true
+read_only = " 🔒"
+
+[git_branch]
+symbol = "⌥ "
+style = "brass"
+format = "[$symbol$branch]($style) "
+
+[git_status]
+style = "ember"
+format = "([$all_status$ahead_behind]($style) )"   # appears only when non-empty
+
+[python]
+style = "jade"
+symbol = "py "
+format = '[$symbol($version)(\($virtualenv\))]($style) '
+
+[nodejs]
+style = "jade"
+symbol = "node "
+format = "[$symbol($version)]($style) "
+
+[golang]
+style = "jade"
+symbol = "go "
+format = "[$symbol($version)]($style) "
+
+[rust]
+style = "jade"
+symbol = "rs "
+format = "[$symbol($version)]($style) "
+
+[cmd_duration]
+min_time = 2000
+style = "warm"      # a slow command gently draws the eye — attention, not alarm
+format = "[ $duration]($style) "

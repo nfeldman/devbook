@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GRUE — Target Brand & Style Guide</title>
+<style>
+  :root{
+    --glass:#eef3f2; --glass-night:#e3ecec; --inky:#0a1018;
+    --ink:#1f2a2b; --dim:#7b9498; --hair:rgba(120,150,150,.28);
+    --grue-green:#17b58a; --grue-blue:#2b7fc4;
+    --brass:#b0913f;  /* brass → gold  (branch)            */
+    --slate:#6e7993;  /* pewter-violet + steel-silver, averaged (place/meta) */
+    --jade:#128f74;   /* verdigris → jade (add / language)  */
+    --ember:#c24a2c;  /* ember — reserved alarm             */
+    --warm:#f3e9d0;   /* gentle-attention paper wash        */
+    --warm-ink:#8a6a24;
+    --mono:"Iosevka Term","Iosevka",ui-monospace,"SF Mono",Menlo,monospace;
+    --sans:ui-sans-serif,-apple-system,system-ui,"Inter",sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--glass);color:var(--ink);font-family:var(--sans);
+    -webkit-font-smoothing:antialiased;line-height:1.55}
+  .wrap{max-width:860px;margin:0 auto;padding:40px 28px 64px}
+  header.mast{border-bottom:1px solid var(--hair);padding-bottom:20px;margin-bottom:32px}
+  .word{font-weight:800;font-size:38px;letter-spacing:3px;
+    background:linear-gradient(90deg,var(--grue-green),var(--grue-blue));
+    -webkit-background-clip:text;background-clip:text;color:transparent}
+  .tag{color:var(--dim);font-size:13px;margin-top:6px;font-style:italic}
+  .meta{color:var(--dim);font:600 10px var(--mono);letter-spacing:.5px;text-transform:uppercase;margin-top:10px}
+  h2{font-size:13px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink);
+    border-bottom:1px solid var(--hair);padding-bottom:8px;margin:44px 0 16px}
+  h2 .n{color:var(--grue-blue);margin-right:8px;font-family:var(--mono)}
+  p{font-size:14px;color:#33454a;margin:0 0 12px}
+  p.lede{font-size:15px;color:var(--ink)}
+  em{color:var(--ink)}
+  code{font-family:var(--mono);font-size:12px;background:#e0e8e7;border-radius:4px;padding:1px 5px;color:#33454a}
+
+  /* temporal curve — gradient, not shimmer */
+  .arc{position:relative;height:38px;border-radius:9px;overflow:hidden;border:1px solid var(--hair)}
+  .arc .fill{position:absolute;inset:0;background:linear-gradient(90deg,
+    #2fbf98 0%, #17b58a 14%, #12a385 32%, #1a9aa0 52%, #2b7fc4 72%, #245aa0 85%,
+    #16305c 90%, #0b1a30 94%, #0a1119 96%, #0a1018 100%)}
+  .arc .cliff{position:absolute;top:0;bottom:0;left:90%;width:1px;background:rgba(255,255,255,.55)}
+  .arc .now{position:absolute;top:-3px;width:14px;height:44px;border:2px solid #fff;border-radius:4px;
+    box-shadow:0 0 8px rgba(0,0,0,.35);transform:translateX(-50%);animation:travel 20s linear infinite}
+  @keyframes travel{0%{left:0}90%{left:90%}94%{left:94%}100%{left:100%}}
+  .arc .ticks{position:absolute;bottom:3px;left:0;right:0;display:flex;justify-content:space-between;
+    padding:0 8px;font:600 8px var(--mono);color:rgba(255,255,255,.9)}
+  .arc .ticks span{text-shadow:0 1px 2px rgba(0,0,0,.45)}
+  .liveprompt{font-family:var(--mono);font-size:14px;margin:14px 0 4px}
+  .liveprompt .dir{color:var(--slate)}.liveprompt .lang{color:var(--jade)}.liveprompt .ink{color:var(--ink)}
+  .liveprompt .grue{font-weight:600;animation:grue 20s linear infinite}
+  @keyframes grue{0%{color:#2fbf98}14%{color:#17b58a}32%{color:#12a385}52%{color:#1a9aa0}
+    72%{color:#2b7fc4}85%{color:#245aa0}90%{color:#16305c}94%{color:#0b1a30}96%{color:#0a1018}100%{color:#2fbf98}}
+
+  /* palette */
+  .sw{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+  .sw .chip{display:flex;align-items:center;gap:12px;border:1px solid var(--hair);border-radius:10px;padding:10px;background:rgba(255,255,255,.35)}
+  .sw .dot{width:38px;height:38px;border-radius:8px;flex:0 0 38px;border:1px solid rgba(0,0,0,.12)}
+  .sw .info{font-size:12px}
+  .sw .info b{font-size:12.5px}
+  .sw .hex{font-family:var(--mono);font-size:11px;color:var(--dim)}
+  .sw .use{color:#4a5a5c;font-size:11.5px}
+
+  table{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:6px}
+  th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--hair);vertical-align:top}
+  th{font:600 10px var(--mono);letter-spacing:.4px;text-transform:uppercase;color:var(--dim)}
+  td .y{color:var(--jade);font-weight:700}
+  td .p{color:var(--grue-blue);font-weight:700}
+  td .x{color:var(--ember);font-weight:700}
+  .legend{font-size:11.5px;color:var(--dim);margin-top:8px}
+  ul{margin:6px 0 12px;padding-left:18px}
+  li{font-size:13.5px;color:#33454a;margin:5px 0}
+  .hintline{background:var(--warm);border-left:3px solid #c9a94e;border-radius:4px;padding:6px 10px;font-size:12.5px;color:#5a5240;margin:10px 0}
+  .foot{margin-top:44px;border-top:1px solid var(--hair);padding-top:16px;color:var(--dim);font-size:11.5px}
+  .kbd{font-family:var(--mono);font-size:11px;background:#e0e8e7;border-radius:4px;padding:1px 5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="mast">
+    <div class="word">GRUE</div>
+    <div class="tag">green before <em>t</em>, blue after — a luminous, glass-field terminal identity</div>
+    <div class="meta">Target Brand &amp; Style Guide · v2 · draft</div>
+  </header>
+
+  <p class="lede">GRUE is a presentation system for a modern macOS terminal built on one idea from
+  philosophy: a color that changes what it <em>is</em> depending on when you look. The field is a cool,
+  luminous glass; every accent lives on a border between two names; and one accent is bound to the clock,
+  crossing a <em>gradient</em> from green through teal to blue, then falling — abruptly — into inky
+  blue-black at the very end of dusk. Warmth is admitted, but only to draw the eye gently; it is never the
+  ground and never the alarm.</p>
+
+  <h2><span class="n">01</span>The concept</h2>
+  <p>After Nelson Goodman's <em>grue</em> (the predicate "green if observed before time <em>t</em>, blue
+  otherwise"), the signature color is defined by <em>when</em>, not just <em>what</em>. This is the day/night
+  mechanism itself, so the theme needs no "dark mode" — it has a <em>late</em> mode, reached by living into
+  the evening. Restraint from Tufte, proportion from Bringhurst, a deliberate argument with Rams'
+  minimalism, and a measured techno-optimist luminance, kept on a leash and always carrying meaning.</p>
+
+  <h2><span class="n">02</span>The temporal gradient <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--dim);font-size:11px">— canonical</span></h2>
+  <div class="arc"><div class="fill"></div><div class="cliff"></div><div class="now"></div>
+    <div class="ticks"><span>dawn</span><span>midday</span><span>dusk</span><span>night</span></div></div>
+  <div class="liveprompt"><span class="dir">~/dev/atlas</span> <span class="grue">⌥ main</span> <span class="lang">py3.12</span> <span class="ink">❯</span></div>
+  <p>A smooth green→teal→blue gradient across the day (no literal shimmer — just the gradient, moving), with
+  a hard <em>cliff</em> at ~90% of the arc that drops the accent into inky blue-black. This form is the
+  canonical target; in the terminal it is approximated in a few stepped stops (see §06).</p>
+
+  <h2><span class="n">03</span>Palette — glass field, liminal accents</h2>
+  <div class="sw">
+    <div class="chip"><span class="dot" style="background:#eef3f2"></span><span class="info"><b>Glass · day</b><br><span class="hex">#eef3f2 · cool, luminous</span><br><span class="use">the page. tinted, never neutral-flat, never beige.</span></span></div>
+    <div class="chip"><span class="dot" style="background:#e3ecec"></span><span class="info"><b>Glass · evening</b><br><span class="hex">#e3ecec</span><br><span class="use">a deeper glass; still light.</span></span></div>
+    <div class="chip"><span class="dot" style="background:#1f2a2b"></span><span class="info"><b>Petrol ink</b><br><span class="hex">#1f2a2b</span><br><span class="use">body text; a blue-green near-black, not neutral.</span></span></div>
+    <div class="chip"><span class="dot" style="background:linear-gradient(90deg,#17b58a,#2b7fc4)"></span><span class="info"><b>Grue</b> · green↔blue<br><span class="hex">#17b58a → #2b7fc4 → #0a1018</span><br><span class="use">the clock-bound gradient accent + inky tail.</span></span></div>
+    <div class="chip"><span class="dot" style="background:#b0913f"></span><span class="info"><b>Brass → gold</b><br><span class="hex">#b0913f</span><br><span class="use">git branch. metal that won't sit still.</span></span></div>
+    <div class="chip"><span class="dot" style="background:#6e7993"></span><span class="info"><b>Slate</b><br><span class="hex">#6e7993 · pewter-violet + steel-silver, averaged</span><br><span class="use">directory / place / meta.</span></span></div>
+    <div class="chip"><span class="dot" style="background:#128f74"></span><span class="info"><b>Verdigris → jade</b><br><span class="hex">#128f74</span><br><span class="use">additions, language, "all good".</span></span></div>
+    <div class="chip"><span class="dot" style="background:#c24a2c"></span><span class="info"><b>Ember</b> · reserved<br><span class="hex">#c24a2c · Display&nbsp;P3</span><br><span class="use">errors / deletions ONLY — warm on cool, so it rings.</span></span></div>
+    <div class="chip"><span class="dot" style="background:#f3e9d0;border-color:#e0d3b0"></span><span class="info"><b>Warm wash</b> · gentle<br><span class="hex">#f3e9d0 / ink #8a6a24</span><br><span class="use">soft paper highlight to draw the eye quietly. never alarm.</span></span></div>
+  </div>
+  <p class="legend">Simultaneous contrast is the point: <em>ember</em> and the <em>warm wash</em> are the
+  only warm notes, held against cool neighbours so both intensify. Grue and ember carry the two Display-P3
+  hues, deepened to read on a light glass ground. Chroma is scarce; it is spent on deltas.</p>
+
+  <div class="hintline">⚑ note — the warm wash in action: a gentle, non-urgent nudge (a stale key, an
+  advisory) reads as paper, not fire. Attention without alarm.</div>
+
+  <h2><span class="n">04</span>Typography</h2>
+  <ul>
+    <li><b>Face:</b> Iosevka (Term) — open-source, variable, richly ligatured; sovereign and tunable. One super-family carries hierarchy through weight and width.</li>
+    <li><b>OpenType:</b> contextual alternates + ligatures <em>on</em> in prose, prompts, and the editor; <em>off</em> in diffs and blame so nothing is misread. Tabular figures (<code>tnum</code>) wherever numerals must align.</li>
+    <li><b>Weights:</b> Light for large/quiet labels, Regular for body, Medium for the one emphasized token. Bold is never a hammer.</li>
+    <li><b>Rhythm:</b> generous line-height (≈1.7 in the terminal), hairline rules instead of boxes, whitespace as structure.</li>
+  </ul>
+
+  <h2><span class="n">05</span>Information design — the laws</h2>
+  <ul>
+    <li><b>The prompt is a dashboard.</b> Show only what changed. Clean repo → near-silent. A number, symbol, or color appears only when its state is non-default.</li>
+    <li><b>Color is taxonomy.</b> Each hue owns one meaning (place, branch, language, add, alarm, gentle-note). A color that can't name its job is cut.</li>
+    <li><b>Ember is sacred; the warm wash is soft.</b> Loud warmth (ember) means failure; quiet warmth (paper wash) means "notice, no rush." Never confuse them.</li>
+    <li><b>Hairlines, not borders.</b> Hi-DPI 1px rules layer information the way a cartographer separates figure from ground.</li>
+    <li><b>Honesty over theater.</b> The one flourish — the grue gradient — must encode something real (the time of day).</li>
+  </ul>
+
+  <h2><span class="n">06</span>Feasibility — ideal vs. terminal reality</h2>
+  <table>
+    <thead><tr><th>Surface</th><th>Static palette</th><th>Time-stepped swap</th><th>Curve-accurate accent</th><th>Smooth motion</th></tr></thead>
+    <tbody>
+      <tr><td>Ghostty</td><td><span class="y">✓ native</span></td><td><span class="p">◑ script+launchd</span></td><td><span class="x">✗</span> (bg not per-prompt)</td><td><span class="x">✗</span></td></tr>
+      <tr><td>Starship</td><td><span class="y">✓</span></td><td><span class="y">✓</span></td><td><span class="p">◑ date→hex module</span></td><td><span class="x">✗</span></td></tr>
+      <tr><td>Zellij</td><td><span class="y">✓</span></td><td><span class="p">◑ theme swap+reload</span></td><td><span class="x">✗</span></td><td><span class="x">✗</span></td></tr>
+      <tr><td>bat / delta</td><td><span class="y">✓</span></td><td><span class="p">◑ env by time</span></td><td><span class="p">◑ per-invoke</span></td><td><span class="x">✗</span></td></tr>
+      <tr><td>eza</td><td><span class="y">✓</span></td><td><span class="p">◑ wrapper</span></td><td><span class="x">✗</span></td><td><span class="x">✗</span></td></tr>
+      <tr><td>Zed</td><td><span class="y">✓ (light)</span></td><td><span class="p">◑ theme switch</span></td><td><span class="x">✗</span></td><td><span class="x">✗</span></td></tr>
+      <tr><td><b>This guide / any web surface</b></td><td><span class="y">✓</span></td><td><span class="y">✓</span></td><td><span class="y">✓</span></td><td><span class="y">✓ real</span></td></tr>
+    </tbody>
+  </table>
+  <p class="legend"><span class="y">✓</span> native&nbsp;&nbsp;<span class="p">◑</span> via a small script + schedule&nbsp;&nbsp;<span class="x">✗</span> not possible in that surface. Smooth motion exists honestly only where pixels animate — so this document is the gradient's canonical home; the terminal implements the closest stepped truth.</p>
+
+  <h2><span class="n">07</span>Mechanism</h2>
+  <ul>
+    <li><code>grue-now.sh</code> — maps the current time to a hex on the green→blue→inky gradient; a Starship custom module calls it, so the prompt accent is gradient-accurate every render.</li>
+    <li><code>grue-phase</code> (launchd, ~every 20&nbsp;min) — picks the nearest stop and rewrites the Ghostty / Zellij / bat theme files, then reloads: the stepped approximation of the arc, including the late inky stop.</li>
+    <li><b>Reversible &amp; honest:</b> <span class="kbd">GRUE_STATIC=1</span> pins a single daytime palette and disables all time behavior. Every theme is a plain dotfile; nothing is a one-way door.</li>
+  </ul>
+
+  <div class="foot">
+    GRUE — target brand &amp; style guide, v2 draft. Glass field, petrol ink, liminal accents, one clock-bound
+    gradient, warmth reserved for gentle attention. The smooth gradient and inky cliff are the canonical ideal;
+    the terminal implements the closest stepped truth. Sovereign by design: open typeface, open tools,
+    plain-text config, fully reversible.
+  </div>
+
+</div>
+</body>
+</html>

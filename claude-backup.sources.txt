@@ -1,0 +1,63 @@
+# What to back up. One path per line. '#' starts a comment. ~ and $HOME expand.
+# Missing paths are silently skipped, so this same list is safe on any Mac.
+# Big/regenerable stuff inside these paths is dropped by excludes.txt.
+
+# --- Claude desktop app (device-tied; not in your cloud account) -----------
+~/Library/Application Support/Claude        # Cowork sessions + outputs + MCP config
+~/Claude                                    # Scheduled task definitions (~/Claude/Scheduled) + related
+
+# --- Identity & keys (IRREPLACEABLE — cannot be regenerated) ----------------
+~/.ssh                                      # SSH private/public keys, known_hosts, config
+~/.gnupg                                    # GPG keys
+~/.config/gh                                # GitHub CLI auth (hosts.yml)
+~/.npmrc                                    # npm registry token
+~/.cargo/credentials.toml                   # crates.io token
+
+# --- Cloud / infra / DB credentials (easily forgotten, painful to re-obtain) -
+~/.aws                                       # AWS access keys + profiles/config
+~/.kube                                      # kubeconfig: cluster creds + contexts
+~/.docker/config.json                        # container registry auth
+~/.config/gcloud                             # Google Cloud SDK auth
+~/.azure                                      # Azure CLI auth
+~/.terraform.d                               # Terraform Cloud token + config
+~/.netrc                                      # machine logins (curl/git/etc.)
+~/.pgpass                                     # PostgreSQL passwords
+~/.pypirc                                     # PyPI upload token
+~/.gem/credentials                            # RubyGems push token
+~/.orbstack                                   # OrbStack config (VM/container data excluded)
+~/.vimrc                                      # vim config (if used)
+
+# --- YOUR ACTUAL PROJECTS (the biggest omission) ----------------------------
+# Pushed git code is already safe on GitHub, but UNCOMMITTED work, local
+# branches, gitignored .env secrets, and non-git data live ONLY here. Absent
+# candidates are skipped; keep whichever you use. Build output is dropped by
+# excludes.txt, but large data files still count toward size.
+~/dev
+~/code
+~/projects
+~/src
+~/work
+
+# --- Shell + tool configuration --------------------------------------------
+~/.zshrc                                    # shell init
+~/.zprofile
+~/.gitconfig                                # git identity + delta/aliases
+~/.gitignore_global
+~/.dotfiles                                 # staged source of your symlinked configs
+~/.config                                   # starship, ghostty, zellij, mise, atuin, uv, zed, gh...
+
+# --- Encrypted 1Password exports (independence escape hatch) ----------------
+~/.local/state/claude-backup/vault-exports  # age-encrypted vault exports (see install-vault-export.sh)
+
+# --- History / learned state (nice to keep) --------------------------------
+~/.local/share/atuin                        # searchable shell history DB
+~/.local/share/zoxide                       # zoxide's learned directories
+~/.zsh_history                              # plain zsh history (fallback)
+
+# --- Local model / container identity (NOT the big blobs) ------------------
+~/.ollama                                   # ollama keys/manifests (models excluded)
+
+# NOTE: language toolchains (~/.rustup, ~/.local/share/mise installs), the
+# Homebrew Cellar, cargo registry, and ollama/orbstack data are intentionally
+# NOT here — they're large and rebuildable from the Brewfile + tool-list
+# manifests this backup generates. Add more lines above if you want them stored.
