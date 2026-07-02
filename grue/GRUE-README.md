@@ -21,7 +21,10 @@ crosses green→teal→blue by day and collapses to inky blue-black at the very 
 ## Prerequisites
 
 The tools from `setup.sh` (Ghostty, Starship, Zellij, bat, delta, eza, Zed) plus the
-**Iosevka** fonts, which `install-grue.sh` installs (`font-iosevka-term`, `-iosevka`, `-iosevka-aile`).
+**Iosevka** fonts, which `install-grue.sh` installs: `font-iosevka-term-nerd-font`
+(patched with icon glyphs so Starship/eza icons render), plus `font-iosevka` and
+`font-iosevka-aile` (UI). If `"IosevkaTerm Nerd Font"` doesn't resolve, check the exact
+installed name with `fc-list | grep -i iosevka | grep -i nerd`.
 
 ## Install
 

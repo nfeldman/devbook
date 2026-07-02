@@ -5,7 +5,7 @@
     "light": "One Light",
     "dark": "One Light"
   },
-  "buffer_font_family": "Iosevka Term",
+  "buffer_font_family": "IosevkaTerm Nerd Font",
   "buffer_font_size": 14.0,
   "buffer_font_features": { "calt": true, "liga": true, "ss20": true },
   "buffer_line_height": "comfortable",

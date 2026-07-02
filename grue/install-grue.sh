@@ -25,7 +25,7 @@ backup(){ [[ -e "$1" && ! -L "$1" ]] && cp "$1" "$1.pre-grue.$(date +%s)" && war
 
 bold "1/6  Iosevka fonts"
 if command -v brew >/dev/null 2>&1; then
-  for c in font-iosevka-term font-iosevka font-iosevka-aile; do
+  for c in font-iosevka-term-nerd-font font-iosevka font-iosevka-aile; do
     brew list --cask "$c" >/dev/null 2>&1 && ok "$c present" || { info "brew install --cask $c"; brew install --cask "$c" || warn "$c failed"; }
   done
 else warn "Homebrew missing — install Iosevka (Term + Aile) yourself for the type to render."; fi

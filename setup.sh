@@ -20,6 +20,12 @@ warn() { printf "\033[1;33m !!\033[0m %s\n" "$1"; }
 
 DOTDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
+# Themes are OFF by default — setup installs tools + dotfiles, nothing cosmetic.
+# Opt in to the GRUE terminal theme:   APPLY_THEMES=1 ./setup.sh
+# (The system-wide "gruebook" — wallpaper, macOS accent — stays a separate,
+#  explicit step: ./gruebook/install-gruebook.sh)
+APPLY_THEMES="${APPLY_THEMES:-0}"
+
 # ---------------------------------------------------------------------------
 bold "1/8  Homebrew"
 # ---------------------------------------------------------------------------
@@ -233,11 +239,25 @@ else
   warn "shellcheck not on PATH yet; re-run to self-lint (or 'brew install shellcheck')."
 fi
 
+# --- Optional: apply the GRUE theme (default OFF) ------------------------------
+if [[ "$APPLY_THEMES" == "1" ]]; then
+  if [[ -x "$DOTDIR/grue/install-grue.sh" ]]; then
+    bold "Applying GRUE theme (APPLY_THEMES=1)"
+    "$DOTDIR/grue/install-grue.sh" || warn "GRUE theme install reported an issue"
+  else
+    warn "APPLY_THEMES=1 but $DOTDIR/grue/install-grue.sh is missing or not executable."
+  fi
+else
+  ok "Themes not applied (default). Apply later:  ./grue/install-grue.sh   or   APPLY_THEMES=1 ./setup.sh"
+fi
+
 echo ""
 bold "Done. ✅"
 echo "Next steps:"
 echo "  1) Quit and reopen your terminal (or launch Ghostty)."
-echo "  2) Set Ghostty's font to 'JetBrainsMono Nerd Font' if it didn't auto-apply."
+echo "  2) Fonts: default is JetBrainsMono Nerd Font; the GRUE theme uses IosevkaTerm Nerd Font."
 echo "  3) Run 'mise doctor' and 'atuin register' (optional history sync)."
 echo "  4) 'ollama pull llama3.2' when you want a local model."
 echo "  5) 'claude' to start Claude Code in any project."
+echo "  6) Cosmetics (opt-in): './grue/install-grue.sh' for the terminal theme,"
+echo "     './gruebook/install-gruebook.sh' for the system-wide Gruebook."
