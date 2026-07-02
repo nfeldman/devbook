@@ -43,7 +43,7 @@ and supply the two secrets from your card when prompted.
 ## 1) Everything `setup.sh` installs automatically
 
 **Package manager & terminal**
-- Homebrew · Ghostty (terminal) · JetBrainsMono Nerd Font
+- Homebrew · Ghostty (terminal) · IosevkaTerm Nerd Font
 
 **Shell layer**
 - Starship (prompt) · Zellij (multiplexer) · zsh config appended to `~/.zshrc`

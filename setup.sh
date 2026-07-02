@@ -67,13 +67,11 @@ brew_cask() { # $1 = cask, $2 = /Applications/App.app to check
 bold "2/8  Terminal + Nerd Font (Ghostty)"
 # ---------------------------------------------------------------------------
 brew_cask ghostty "/Applications/Ghostty.app"
-# Nerd Font gives Starship/eza their icons and glyphs
-if ! brew list --cask font-jetbrains-mono-nerd-font >/dev/null 2>&1; then
-  info "Installing JetBrainsMono Nerd Font"
-  brew install --cask font-jetbrains-mono-nerd-font
-else
-  ok "JetBrainsMono Nerd Font present"
-fi
+# Iosevka — one open super-family everywhere. The Nerd patch gives Starship/eza their
+# icon glyphs; Iosevka Aile is the proportional variant for editor UI (e.g. Zed).
+for c in font-iosevka-term-nerd-font font-iosevka-aile; do
+  brew list --cask "$c" >/dev/null 2>&1 && ok "$c present" || { info "Installing $c"; brew install --cask "$c"; }
+done
 
 # ---------------------------------------------------------------------------
 bold "3/8  Shell layer (Starship prompt + Zellij multiplexer)"
@@ -257,7 +255,7 @@ echo ""
 bold "Done. ✅"
 echo "Next steps:"
 echo "  1) Quit and reopen your terminal (or launch Ghostty)."
-echo "  2) Fonts: default is JetBrainsMono Nerd Font; the GRUE theme uses IosevkaTerm Nerd Font."
+echo "  2) Font: IosevkaTerm Nerd Font everywhere (the GRUE theme changes only colors)."
 echo "  3) Run 'mise doctor' and 'atuin register' (optional history sync)."
 echo "  4) 'ollama pull qwen2.5-coder' for a local, vendor-free coding model (see MODELS.md)."
 echo "  5) 'claude' to start Claude Code (the one intentional vendor tool) in any project."

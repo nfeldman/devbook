@@ -41,7 +41,7 @@ shell changes load.
 
 **Terminal & shell**
 - **Ghostty** — GPU-accelerated, native macOS terminal. Fast, minimal config. Your iTerm2 replacement.
-- **JetBrainsMono Nerd Font** — patched font so prompt/file icons render.
+- **IosevkaTerm Nerd Font** — open, feature-rich patched font so prompt/file icons render (one typeface everywhere; the GRUE theme changes only colors).
 - **Starship** — fast, informative prompt (git state, language versions, k8s context).
 - **Zellij** — terminal multiplexer (panes, tabs, detachable sessions). Friendlier than tmux; keybinds show on screen.
 
@@ -67,7 +67,7 @@ shell changes load.
 
 ## Recommended post-install steps
 
-1. **Ghostty font**: if it didn't auto-apply, set font to `JetBrainsMono Nerd Font` (already in `ghostty.config`).
+1. **Ghostty font**: if it didn't auto-apply, set font to `IosevkaTerm Nerd Font` (already in `ghostty.config`).
 2. **git + delta**: add this to `~/.gitconfig` so diffs use delta:
    ```ini
    [core]
