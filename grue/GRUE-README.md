@@ -59,9 +59,9 @@ Everything is backed up and reversible:
 - `launchctl unload ~/Library/LaunchAgents/com.grue.phase.plist`
 - Remove the `# >>> grue >>>` block from `~/.zshrc` and the delta `include.path` from `~/.gitconfig`.
 
-## Not yet (honest follow-ups)
+## Themes & limits
 
-- A full custom **GRUE Light** Zed theme (JSON) — meanwhile it uses One Light + Iosevka.
-- A custom **bat** `.tmTheme` in exact GRUE colors — meanwhile `BAT_THEME=GitHub` (light).
+- Zed and bat use a light base here (One Light / GitHub). Install `gruebook/` for the
+  full custom **GRUE Light** themes for both.
 - Per-app ligature disabling in diffs isn't possible; pick an Iosevka feature set without
-  the offending ligature if a diff arrow ever reads wrong.
+  the offending ligature if a diff arrow reads wrong.

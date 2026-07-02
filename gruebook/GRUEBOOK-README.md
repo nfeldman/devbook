@@ -9,9 +9,9 @@ you theme, not a fantasy OS repaint.
 - **Dynamic wallpaper** — a glass desktop tinted by the *current* grue accent, re-rendered
   every 20 min so it walks the same green→blue→inky curve as your prompt. The concept
   escapes the terminal onto the whole screen. (`gen-wallpaper.py` + `gruebook-wallpaper.sh`)
-- **Zed** — a real **GRUE Light** theme (glass field, petrol ink, brass/slate/jade, ember,
-  warm current-line), replacing the One Light stand-in.
-- **bat** — a **GRUE Light** `.tmTheme`, replacing the GitHub stand-in.
+- **Zed** — a **GRUE Light** theme (glass field, petrol ink, brass/slate/jade, ember,
+  warm current-line).
+- **bat** — a **GRUE Light** `.tmTheme`.
 - **macOS appearance** — custom **highlight** color (grue), **accent** set to Blue (the
   nearest of macOS's fixed set), Light mode.
 
@@ -35,7 +35,7 @@ Log out and back in so the accent/highlight fully apply.
   sometimes ignores.
 - **System chrome can't be recolored** (menu bar internals, traffic lights, login screen) —
   that would need hacks; out of scope by design.
-- Browser userstyles were deliberately skipped.
+- Browser theming is out of scope.
 
 ## Reverse it
 

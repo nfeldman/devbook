@@ -1,5 +1,5 @@
 # GRUE shell integration  →  sourced from ~/.zshrc by install-grue.sh
-# bat: closest bundled light theme (a custom GRUE .tmTheme can replace this later).
+# bat: light theme (gruebook/ installs the full GRUE .tmTheme).
 export BAT_THEME="GitHub"
 
 # eza: colour-as-taxonomy on the GRUE palette (truecolor 38;2;R;G;B).

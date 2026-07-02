@@ -52,7 +52,7 @@ shell changes load.
 - `jq`/`yq` for JSON/YAML, `direnv` per-project env, `tldr` concise man pages
 
 **Language runtimes**
-- **mise** — polyglot version manager (replaces nvm/pyenv/rbenv/g). Rust-fast, one tool for Node, Python, and Go. Installs Node LTS, Python 3.12, and Go globally; override per-project with a `mise.toml`. (Rust is handled by **rustup** instead — mise's Rust support is finicky, rustup is canonical.)
+- **mise** — polyglot version manager (replaces nvm/pyenv/rbenv/g). Rust-fast, one tool for Node, Python, and Go. Installs Node LTS, Python 3.12, and Go globally; override per-project with a `mise.toml`. (Rust uses **rustup**.)
 - **uv** — Astral's ultrafast Python package/project manager. Use it for venvs and dependencies (`uv init`, `uv add`, `uv run`). Great for ML/AI work.
 
 **Containers / DevOps**

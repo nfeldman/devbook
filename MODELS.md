@@ -17,8 +17,8 @@ only when you decide a task needs it.
    self-built client that speaks the OpenAI-compatible protocol and assumes local or
    OpenRouter, making the AI-client layer swappable like everything else. Documenting the
    exit before it's built is the point: the lock-in is time-boxed, not accepted.
-4. **No cloud-agent CLI is installed by default.** `aider` was removed on purpose. If you
-   ever want a neutral terminal agent, add it and point it at Ollama first (below).
+4. **No cloud-agent CLI is installed by default.** If you want a neutral terminal agent,
+   add one and point it at Ollama first (below).
 
 ## Local coding models (open weights, sovereign licenses)
 
@@ -71,5 +71,4 @@ already in place to swap it out the day a vendor changes terms, prices, or avail
 The endgame for the AI-client layer is **Chorusmith** — a self-built, OpenAI-compatible
 client intended to replace the Claude desktop app (an early milestone of the project).
 Once it lands, the last vendor-bound piece here becomes swappable too: local by default,
-OpenRouter or any provider by choice, all behind the standard protocol. This file is the
-record of that intent — the exit designed before it's needed.
+OpenRouter or any provider by choice, all behind the standard protocol.

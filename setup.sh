@@ -144,7 +144,7 @@ brew_formula helm         # kubernetes package manager
 # ---------------------------------------------------------------------------
 bold "7/8  AI-forward tooling"
 # ---------------------------------------------------------------------------
-brew_cask ollama "/Applications/Ollama.app"      # local LLM runtime (for later)
+brew_cask ollama "/Applications/Ollama.app"      # local, vendor-free LLM runtime
 brew_cask zed "/Applications/Zed.app"            # fast, AI-native editor (optional; VS Code/Cursor also fine)
 
 # Claude Code (needs node from mise; installs the CLI globally)
@@ -167,10 +167,8 @@ fi
 # ---------------------------------------------------------------------------
 bold "8/8  Wiring up dotfiles"
 # ---------------------------------------------------------------------------
-# Stage the config into a STABLE home for the symlinks. If we linked straight from
-# $DOTDIR (wherever you happened to run this), moving/deleting that folder would
-# dangle every link. Copying into ~/.dotfiles makes the source durable — and it's a
-# natural git repo later. (Verified failure mode: a symlink to a moved source breaks.)
+# Stage config into a stable ~/.dotfiles home so the symlinks have a durable source
+# (and a natural git repo).
 DOTREPO="$HOME/.dotfiles"
 mkdir -p "$DOTREPO" "$HOME/.config" "$HOME/.config/ghostty" "$HOME/.config/zellij"
 info "Staging dotfiles into $DOTREPO"

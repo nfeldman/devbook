@@ -63,7 +63,7 @@ if command -v bat >/dev/null 2>&1; then
   printf 'export BAT_THEME="GRUE Light"\n' > "$GRUEC/gruebook-shell.zsh"
   ZSHRC="$HOME/.zshrc"; MARK="# >>> gruebook >>>"
   grep -qF "$MARK" "$ZSHRC" 2>/dev/null || { echo ""; echo "$MARK"; echo "source \"$GRUEC/gruebook-shell.zsh\""; echo "# <<< gruebook <<<"; } >> "$ZSHRC"
-  ok "bat theme built + selected (overrides the GitHub stand-in)"
+  ok "bat theme built + selected"
 else warn "bat not installed — skipped"; fi
 
 bold "5/6  Dynamic wallpaper"

@@ -89,18 +89,13 @@ and supply the two secrets from your card when prompted.
   never hostage to the company or a lapsed subscription.
 
 **Limits (honest)**
-- **I can't run installs on your Mac from here** — my shell is a sandbox and I'm
-  blocked from typing into your Terminal. You run the two scripts; I assembled + tested them.
-- **Backup setup is interactive once**: `rclone config` needs a browser OAuth, and you
-  set the passphrase by hand. After that it's invisible.
+- **First-time setup is interactive**: `rclone config` needs a browser OAuth, and you
+  set the backup passphrase by hand. After that it's invisible.
 - **Hourly window**: up to ~1h of new work at risk between snapshots (tune in the plist).
 - **Two secrets live off-machine**: the restic passphrase and how to re-auth the cloud
   account. Lose both and the backup is unrecoverable *by design*.
 - **Scope is the dev environment, not the whole Mac**: macOS system settings, FileVault
   state, app licenses, browser profiles, and non-dev apps are **not** in the backup.
-- Validation here used syntax checks + mock-binary runs (no network in the sandbox to
-  install real `restic`/`brew`); run `setup.sh`'s built-in shellcheck on the Mac for a
-  second pass.
 
 ---
 

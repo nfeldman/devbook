@@ -12,6 +12,5 @@
   "ui_font_family": "Iosevka Aile",
   "ui_font_size": 15.0,
   "cursor_blink": false,
-  "current_line_highlight": "line",
-  "//_theme_note": "A full custom 'GRUE Light' Zed theme (glass field, petrol ink, brass/slate/jade/ember, warm gutter) is a JSON theme file — a good follow-up. One Light is the closest calm light base meanwhile."
+  "current_line_highlight": "line"
 }
