@@ -39,6 +39,9 @@ Log out and back in so the accent/highlight fully apply.
 
 ## Reverse it
 
+**One shot:** `./uninstall-grue.sh` (repo root) removes the whole GRUE + Gruebook layer.
+Manual steps below if you prefer.
+
 - Appearance: `gruebook-appearance.sh --revert`
 - Wallpaper: `launchctl unload ~/Library/LaunchAgents/com.gruebook.wallpaper.plist`, then set any wallpaper.
 - Zed / bat: choose another theme; the GRUE themes just sit in your themes dirs.

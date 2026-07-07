@@ -53,6 +53,9 @@ set `GRUE_STATIC=1` (accent pins to daytime green, timer skipped).
 
 ## Revert
 
+**One shot:** `./uninstall-grue.sh` (repo root) removes GRUE *and* the Gruebook, restoring the
+pre-GRUE configs. Manual steps below if you prefer to pick and choose.
+
 Everything is backed up and reversible:
 
 - Restore the `*.pre-grue.*` files `install-grue.sh` wrote next to each config.
