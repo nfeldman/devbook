@@ -95,9 +95,9 @@ brew_formula gh           # GitHub CLI
 brew_formula lazygit      # git TUI
 brew_formula direnv       # per-directory env vars
 brew_formula shellcheck   # shell linter (powers this script's self-check)
-brew_formula age          # modern file encryption (backups, vault exports)
+brew_formula age          # modern file encryption
 
-# 1Password CLI (`op`) — used by the optional vault-export escape hatch.
+# 1Password CLI (op).
 brew_cask 1password-cli ""
 
 # Sourcetree — free, full-featured Git GUI (Atlassian). One-time account at install;
