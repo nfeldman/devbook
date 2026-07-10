@@ -105,6 +105,10 @@ brew_formula age          # modern file encryption (backups, vault exports)
 # 1Password CLI (`op`) — used by the optional vault-export escape hatch.
 brew_cask 1password-cli ""
 
+# Sourcetree — free, full-featured Git GUI (Atlassian). One-time account at install;
+# works with GitHub/any host afterward, no ongoing Atlassian tie.
+brew_cask sourcetree "/Applications/Sourcetree.app"
+
 # ---------------------------------------------------------------------------
 bold "5/8  Language runtimes (mise) + Python tooling (uv)"
 # ---------------------------------------------------------------------------

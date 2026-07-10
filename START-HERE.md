@@ -51,6 +51,7 @@ and supply the two secrets from your card when prompted.
 **Modern CLI toolkit**
 - eza · bat · fd · ripgrep (rg) · fzf · zoxide · git-delta · jq · yq · sd · dust ·
   bottom (btm) · tealdeer (tldr) · atuin · gh · lazygit · direnv · shellcheck
+- **Git GUI**: Sourcetree (free, full-featured)
 
 **Language runtimes**
 - mise (manages Node LTS, Python 3.12, Go) · uv (Python packaging) · rustup (Rust stable)
