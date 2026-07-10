@@ -48,7 +48,7 @@ shell changes load.
 **Modern CLI toolkit** (drop-in upgrades for old Unix tools)
 - `eza` (ls), `bat` (cat), `fd` (find), `ripgrep`/`rg` (grep), `sd` (sed), `dust` (du), `bottom`/`btm` (top)
 - `fzf` fuzzy finder, `zoxide` smart cd (`z`), `atuin` searchable history
-- `git-delta` pretty diffs, `lazygit` git TUI, `gh` GitHub CLI
+- `git-delta` pretty diffs, `lazygit` git TUI, `gh` GitHub CLI; **Sourcetree** & **GitButler** (Git GUIs)
 - `jq`/`yq` for JSON/YAML, `direnv` per-project env, `tldr` concise man pages
 
 **Language runtimes**

@@ -100,9 +100,12 @@ brew_formula age          # modern file encryption
 # 1Password CLI (op).
 brew_cask 1password-cli ""
 
+# Git clients (GUI):
 # Sourcetree — free, full-featured Git GUI (Atlassian). One-time account at install;
 # works with GitHub/any host afterward, no ongoing Atlassian tie.
 brew_cask sourcetree "/Applications/Sourcetree.app"
+# GitButler — Git client built around simultaneous / virtual branches (open source).
+brew_cask gitbutler "/Applications/GitButler.app"
 
 # ---------------------------------------------------------------------------
 bold "5/8  Language runtimes (mise) + Python tooling (uv)"
