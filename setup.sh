@@ -20,11 +20,6 @@ warn() { printf "\033[1;33m !!\033[0m %s\n" "$1"; }
 
 DOTDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# Themes are OFF by default — setup installs tools + dotfiles, nothing cosmetic. Opt in:
-#   APPLY_THEMES=1   ./setup.sh   → GRUE terminal theme
-#   APPLY_THEMES=all ./setup.sh   → terminal theme + system-wide Gruebook (wallpaper, macOS accent)
-APPLY_THEMES="${APPLY_THEMES:-0}"
-
 # ---------------------------------------------------------------------------
 bold "1/8  Homebrew"
 # ---------------------------------------------------------------------------
@@ -233,35 +228,11 @@ else
   warn "shellcheck not on PATH yet; re-run to self-lint (or 'brew install shellcheck')."
 fi
 
-# --- Optional: apply themes (default OFF) --------------------------------------
-# bash 3.2-safe (no ;;& fallthrough): plain ifs.
-if [[ "$APPLY_THEMES" == "1" || "$APPLY_THEMES" == "all" ]]; then
-  if [[ -x "$DOTDIR/grue/install-grue.sh" ]]; then
-    bold "Applying GRUE terminal theme (APPLY_THEMES=$APPLY_THEMES)"
-    "$DOTDIR/grue/install-grue.sh" || warn "GRUE theme install reported an issue"
-  else
-    warn "grue/install-grue.sh is missing or not executable."
-  fi
-fi
-if [[ "$APPLY_THEMES" == "all" ]]; then
-  if [[ -x "$DOTDIR/gruebook/install-gruebook.sh" ]]; then
-    bold "Applying system-wide Gruebook (APPLY_THEMES=all)"
-    "$DOTDIR/gruebook/install-gruebook.sh" || warn "Gruebook install reported an issue"
-  else
-    warn "gruebook/install-gruebook.sh is missing or not executable."
-  fi
-fi
-if [[ "$APPLY_THEMES" != "1" && "$APPLY_THEMES" != "all" ]]; then
-  ok "Themes not applied (default). Terminal: APPLY_THEMES=1 ./setup.sh · everything: APPLY_THEMES=all ./setup.sh"
-fi
-
 echo ""
 bold "Done. ✅"
 echo "Next steps:"
 echo "  1) Quit and reopen your terminal (or launch Ghostty)."
-echo "  2) Font: IosevkaTerm Nerd Font everywhere (the GRUE theme changes only colors)."
+echo "  2) Font: IosevkaTerm Nerd Font everywhere."
 echo "  3) Run 'mise doctor' and 'atuin register' (optional history sync)."
 echo "  4) 'ollama pull qwen2.5-coder' for a local, vendor-free coding model (see MODELS.md)."
 echo "  5) 'claude' to start Claude Code (the one intentional vendor tool) in any project."
-echo "  6) Cosmetics (opt-in): './grue/install-grue.sh' for the terminal theme,"
-echo "     './gruebook/install-gruebook.sh' for the system-wide Gruebook."

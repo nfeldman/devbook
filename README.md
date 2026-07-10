@@ -41,7 +41,7 @@ shell changes load.
 
 **Terminal & shell**
 - **Ghostty** — GPU-accelerated, native macOS terminal. Fast, minimal config. Your iTerm2 replacement.
-- **IosevkaTerm Nerd Font** — open, feature-rich patched font so prompt/file icons render (one typeface everywhere; the GRUE theme changes only colors).
+- **IosevkaTerm Nerd Font** — open, feature-rich patched font so prompt/file icons render.
 - **Starship** — fast, informative prompt (git state, language versions, k8s context).
 - **Zellij** — terminal multiplexer (panes, tabs, detachable sessions). Friendlier than tmux; keybinds show on screen.
 
