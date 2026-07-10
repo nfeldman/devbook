@@ -216,7 +216,7 @@ mkdir -p "$(dirname "$MANIFEST")"
 ok "recorded run in $MANIFEST"
 
 # --- Optional self-check: lint THIS script with shellcheck (non-fatal) ---------
-# shellcheck is installed in step 4, so this runs from the first invocation onward.
+# The shellcheck linter is installed in step 4, so this runs from the first run onward.
 # Skip with:  SKIP_SELFCHECK=1 ./setup.sh
 if [[ "${SKIP_SELFCHECK:-0}" == "1" ]]; then
   ok "self-check skipped (SKIP_SELFCHECK=1)"
