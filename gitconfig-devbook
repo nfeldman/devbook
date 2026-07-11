@@ -1,0 +1,37 @@
+# Devbook git defaults  →  ~/.dotfiles/gitconfig-devbook
+# Wired into your global config by setup.sh via ONE reversible line:
+#   git config --global --add include.path ~/.dotfiles/gitconfig-devbook
+# Undo everything here by removing that include.path entry. Anything you set
+# in ~/.gitconfig itself wins over these (later definitions override).
+
+# --- delta: pretty, navigable diffs --------------------------------------
+# Requires git-delta on PATH (setup.sh installs it). If you copy this file to
+# a machine without delta, remove [core]/[interactive]/[delta] or git breaks.
+[core]
+    pager = delta
+[interactive]
+    diffFilter = delta --color-only
+[delta]
+    navigate = true
+    line-numbers = true
+
+# --- modern quality-of-life defaults --------------------------------------
+[init]
+    defaultBranch = main
+[push]
+    autoSetupRemote = true      # first `git push` just works, no -u dance
+[fetch]
+    prune = true                # deleted remote branches disappear locally
+[pull]
+    ff = only                   # never surprise-merge on pull
+[merge]
+    conflictstyle = zdiff3      # show the base in conflict markers
+[diff]
+    algorithm = histogram       # better hunks than the 40-year-old default
+    colorMoved = default        # moved code renders as moved, not add+delete
+[rerere]
+    enabled = true              # remember conflict resolutions, replay them
+[branch]
+    sort = -committerdate       # `git branch` lists freshest first
+[commit]
+    verbose = true              # show the diff in the commit-message editor

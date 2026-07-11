@@ -65,7 +65,12 @@ brew_cask ghostty "/Applications/Ghostty.app"
 # Iosevka — one open super-family everywhere. The Nerd patch gives Starship/eza their
 # icon glyphs; Iosevka Aile is the proportional variant for editor UI (e.g. Zed).
 for c in font-iosevka-term-nerd-font font-iosevka-aile; do
-  brew list --cask "$c" >/dev/null 2>&1 && ok "$c present" || { info "Installing $c"; brew install --cask "$c"; }
+  if brew list --cask "$c" >/dev/null 2>&1; then
+    ok "$c present"
+  else
+    info "Installing $c"
+    brew install --cask "$c"
+  fi
 done
 
 # ---------------------------------------------------------------------------
@@ -81,7 +86,7 @@ brew_formula eza          # modern `ls`
 brew_formula bat          # modern `cat` w/ syntax highlight
 brew_formula fd           # modern `find`
 brew_formula ripgrep rg   # modern `grep`
-brew_formula fzf          # fuzzy finder (ctrl-r, ctrl-t)
+brew_formula fzf          # fuzzy finder (ctrl-t files, alt-c dirs; atuin owns ctrl-r)
 brew_formula zoxide       # smart `cd` (learns your dirs)
 brew_formula git-delta delta   # beautiful git diffs
 brew_formula jq           # JSON wrangling
@@ -112,7 +117,18 @@ bold "5/8  Language runtimes (mise) + Python tooling (uv)"
 # ---------------------------------------------------------------------------
 brew_formula mise
 brew_formula uv           # ultrafast Python package/project manager (Astral)
-brew_formula rustup       # official Rust toolchain manager (boring + reliable; see below)
+brew_formula elan-init elan  # official Lean toolchain manager; same role as rustup, see below
+
+# rustup — official Rust toolchain manager (boring + reliable; see below).
+# It's KEG-ONLY in Homebrew (never linked into PATH), so guard on its keg path:
+# a `command -v` check would reinstall forever and the setup below would no-op.
+RUSTUP_BIN="$(brew --prefix)/opt/rustup/bin"
+if [[ -x "$RUSTUP_BIN/rustup" ]]; then
+  ok "rustup present"
+else
+  info "brew install rustup"
+  brew install rustup
+fi
 
 # Install common runtimes via mise (global defaults). Re-running is a no-op.
 if command -v mise >/dev/null 2>&1; then
@@ -121,15 +137,25 @@ if command -v mise >/dev/null 2>&1; then
   mise use -g python@3.12 || warn "mise python failed"
   mise use -g go@latest   || warn "mise go failed"
   # mise use -g does NOT affect this non-interactive shell's PATH. Add the shims dir
-  # now so `node`/`npm` resolve for the AI-tooling step later in THIS script.
+  # now so the runtimes it installed resolve later in THIS script.
   export PATH="$HOME/.local/share/mise/shims:$PATH"
   hash -r 2>/dev/null || true
 fi
 
 # Rust via rustup, not mise: mise's rust support is finicky; rustup is canonical.
-if command -v rustup >/dev/null 2>&1; then
+# Called by keg path (keg-only); the zshrc block puts this dir on PATH for shells.
+if [[ -x "$RUSTUP_BIN/rustup" ]]; then
   info "Setting up Rust stable via rustup"
-  rustup default stable >/dev/null 2>&1 || rustup toolchain install stable || warn "rustup stable failed"
+  "$RUSTUP_BIN/rustup" default stable >/dev/null 2>&1 || "$RUSTUP_BIN/rustup" toolchain install stable || warn "rustup stable failed"
+else
+  warn "rustup missing at $RUSTUP_BIN — skipping Rust setup"
+fi
+
+# Lean via elan, not mise: elan is canonical and auto-switches toolchains from a
+# project's lean-toolchain file (which mise ignores). `stable` = latest Lean 4.
+if command -v elan >/dev/null 2>&1; then
+  info "Setting up Lean stable via elan"
+  elan default stable >/dev/null 2>&1 || elan toolchain install stable || warn "elan stable failed"
 fi
 
 # ---------------------------------------------------------------------------
@@ -146,22 +172,22 @@ bold "7/8  AI-forward tooling"
 brew_cask ollama "/Applications/Ollama.app"      # local, vendor-free LLM runtime
 brew_cask zed "/Applications/Zed.app"            # fast, AI-native editor (optional; VS Code/Cursor also fine)
 
-# Claude Code (needs node from mise; installs the CLI globally)
-if command -v npm >/dev/null 2>&1; then
-  if ! command -v claude >/dev/null 2>&1; then
-    info "Installing Claude Code CLI (npm -g @anthropic-ai/claude-code)"
-    npm install -g @anthropic-ai/claude-code || warn "Claude Code install failed"
-  else
-    ok "Claude Code present"
-  fi
+# Claude Code — Anthropic's recommended install is the native binary (signed,
+# auto-updating, no Node dependency; lands in ~/.local/bin, which the zshrc block
+# puts on PATH). The brew cask (claude-code) also exists but lags and doesn't
+# auto-update, so we take the official path. npm is the deprecated legacy route.
+if ! command -v claude >/dev/null 2>&1 && [[ ! -x "$HOME/.local/bin/claude" ]]; then
+  info "Installing Claude Code (native installer)"
+  curl -fsSL https://claude.ai/install.sh | bash || warn "Claude Code install failed"
 else
-  warn "npm not on PATH yet — open a new shell and run: npm install -g @anthropic-ai/claude-code"
+  ok "Claude Code present"
 fi
 
 # No cloud-agent tool installed by default (model sovereignty — see MODELS.md).
 # Ollama is your local, vendor-free runtime. Suggested coding model:
-#   ollama pull qwen2.5-coder        # add :14b or :32b if you have the RAM
-# Add a neutral agent later if you want one (e.g. aider), pointed at Ollama first.
+#   ollama pull qwen3-coder:30b      # 32GB RAM; see MODELS.md for 16GB/64GB picks
+# Add a neutral agent later if you want one (e.g. opencode — open source,
+# bring-your-own-model), pointed at Ollama first.
 
 # ---------------------------------------------------------------------------
 bold "8/8  Wiring up dotfiles"
@@ -171,7 +197,7 @@ bold "8/8  Wiring up dotfiles"
 DOTREPO="$HOME/.dotfiles"
 mkdir -p "$DOTREPO" "$HOME/.config" "$HOME/.config/ghostty" "$HOME/.config/zellij"
 info "Staging dotfiles into $DOTREPO"
-for f in starship.toml ghostty.config zellij.kdl zshrc-additions.zsh; do
+for f in starship.toml ghostty.config zellij.kdl zshrc-additions.zsh gitconfig-devbook; do
   [[ -f "$DOTDIR/$f" ]] && cp "$DOTDIR/$f" "$DOTREPO/$f"
 done
 
@@ -179,6 +205,10 @@ link() { # $1 = source (in $DOTREPO), $2 = destination
   if [[ -f "$1" ]]; then
     if [[ -e "$2" && ! -L "$2" ]]; then
       cp "$2" "$2.backup.$(date +%s)" && warn "backed up existing $2"
+    elif [[ -L "$2" && "$(readlink "$2")" != "$1" ]]; then
+      # Provenance: don't silently repoint someone else's symlink (e.g. another
+      # dotfiles manager) — say what it used to point at so it can be restored.
+      warn "repointing symlink $2 (was → $(readlink "$2"))"
     fi
     ln -sf "$1" "$2" && ok "linked $(basename "$2")"
   fi
@@ -188,21 +218,44 @@ link "$DOTREPO/starship.toml"  "$HOME/.config/starship.toml"
 link "$DOTREPO/ghostty.config" "$HOME/.config/ghostty/config"
 link "$DOTREPO/zellij.kdl"     "$HOME/.config/zellij/config.kdl"
 
-# Append the shell-init block to ~/.zshrc exactly once (content is embedded, so it
-# survives even if $DOTREPO later moves).
-ZSHRC="$HOME/.zshrc"
-MARKER="# >>> dev-env setup >>>"
-if ! grep -qF "$MARKER" "$ZSHRC" 2>/dev/null; then
-  info "Appending init block to ~/.zshrc"
-  {
-    echo ""
-    echo "$MARKER"
-    cat "$DOTREPO/zshrc-additions.zsh"
-    echo "# <<< dev-env setup <<<"
-  } >> "$ZSHRC"
-else
-  ok "~/.zshrc already configured"
+# Git defaults (delta pager, zdiff3, modern QoL) live in gitconfig-devbook so
+# ~/.gitconfig itself stays yours. Wiring it in is ONE reversible include line;
+# your own ~/.gitconfig settings still override anything in the include.
+if command -v git >/dev/null 2>&1; then
+  if git config --global --get-all include.path 2>/dev/null | grep -qF "$DOTREPO/gitconfig-devbook"; then
+    ok "git include already wired"
+  else
+    info "Adding include.path $DOTREPO/gitconfig-devbook to git global config"
+    git config --global --add include.path "$DOTREPO/gitconfig-devbook"
+  fi
 fi
+
+# ~/.zshrc gets a small marked block that SOURCES the staged copy, so re-running
+# setup.sh always delivers zshrc updates (an embedded copy goes stale forever).
+# On re-run the old marked block — including older embedded ones — is replaced
+# in place; everything outside the markers is untouched.
+ZSHRC="$HOME/.zshrc"
+MARKER_START="# >>> dev-env setup >>>"
+MARKER_END="# <<< dev-env setup <<<"
+HAD_BLOCK=0
+if grep -qF "$MARKER_START" "$ZSHRC" 2>/dev/null; then
+  HAD_BLOCK=1
+  info "Refreshing dev-env block in .zshrc"
+  TMP="$(mktemp)"
+  awk -v s="$MARKER_START" -v e="$MARKER_END" '$0==s{skip=1} !skip{print} $0==e{skip=0}' "$ZSHRC" > "$TMP"
+  cat "$TMP" > "$ZSHRC"   # cat-over, not mv: keeps ~/.zshrc's inode and permissions
+  rm -f "$TMP"
+else
+  info "Adding dev-env block to .zshrc"
+fi
+{
+  if [[ "$HAD_BLOCK" == "0" ]]; then echo ""; fi
+  echo "$MARKER_START"
+  echo '# Shell init lives in the staged dotfiles; setup.sh refreshes it on each run.'
+  echo '[[ -f "$HOME/.dotfiles/zshrc-additions.zsh" ]] && source "$HOME/.dotfiles/zshrc-additions.zsh"'
+  echo "$MARKER_END"
+} >> "$ZSHRC"
+ok "zshrc block sources $DOTREPO/zshrc-additions.zsh"
 
 # Provenance: record what this run touched (conservator habit — cheap, legible).
 MANIFEST="$HOME/.config/dev-env/manifest.txt"
@@ -212,6 +265,8 @@ mkdir -p "$(dirname "$MANIFEST")"
   echo "ran from:        $DOTDIR"
   echo "staged dotfiles: $DOTREPO"
   command -v brew >/dev/null 2>&1 && echo "brew:            $(brew --version | head -1)"
+  # Record what the two curl-installed tools (brew above, claude here) resolved to.
+  command -v claude >/dev/null 2>&1 && echo "claude:          $(claude --version 2>/dev/null | head -1)" || true
 } >> "$MANIFEST"
 ok "recorded run in $MANIFEST"
 
@@ -237,5 +292,5 @@ echo "Next steps:"
 echo "  1) Quit and reopen your terminal (or launch Ghostty)."
 echo "  2) Font: IosevkaTerm Nerd Font everywhere."
 echo "  3) Run 'mise doctor' and 'atuin register' (optional history sync)."
-echo "  4) 'ollama pull qwen2.5-coder' for a local, vendor-free coding model (see MODELS.md)."
+echo "  4) 'ollama pull qwen3-coder:30b' for a local, vendor-free coding model (see MODELS.md for your RAM tier)."
 echo "  5) 'claude' to start Claude Code (the one intentional vendor tool) in any project."
