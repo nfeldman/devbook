@@ -9,7 +9,7 @@ only when you decide a task needs it.
 1. **Default local.** Ollama is the vendor-free runtime. A capable open coding model
    runs entirely on your Mac — no API key, no per-keystroke network, no account.
 2. **Keep every tool swappable.** Prefer tools whose model is a config value (Zed's
-   assistant, aider, most OpenAI-compatible clients) over tools wired to one vendor.
+   assistant, opencode, most OpenAI-compatible clients) over tools wired to one vendor.
    Switching models should be an edit, never a reinstall.
 3. **The one vendor-bound tool is temporary — and has a named exit.** **Claude Code**
    (and the Claude desktop app) is Anthropic's own client, vendor-bound by design. It
@@ -18,35 +18,46 @@ only when you decide a task needs it.
    OpenRouter, making the AI-client layer swappable like everything else. Documenting the
    exit before it's built is the point: the lock-in is time-boxed, not accepted.
 4. **No cloud-agent CLI is installed by default.** If you want a neutral terminal agent,
-   add one and point it at Ollama first (below).
+   add one and point it at Ollama first (below) — **opencode** is the current pick:
+   open source, bring-your-own-model, one `brew install` away.
 
 ## Local coding models (open weights, sovereign licenses)
 
-**Qwen2.5-Coder** is the recommended default — Apache-2.0, state-of-the-art open coding
-model (the 32B edges out GPT-4 on HumanEval). Pick by your Mac's unified memory:
+The current generation is **MoE models** — huge total capacity, only a few billion
+active parameters per token — which is exactly what Apple Silicon's unified memory
+is good at: plenty of room to hold the weights, speed set by the small active set.
+All picks below are Apache-2.0. Choose by your Mac's unified memory:
 
-| Model | Disk (Q4) | Wants ~ | Good for |
-|-------|-----------|---------|----------|
-| `qwen2.5-coder:7b`  | ~5 GB  | 16 GB | safe default, fast, single-file edits |
-| `qwen2.5-coder:14b` | ~9 GB  | 32 GB | best balance, multi-file work |
-| `qwen2.5-coder:32b` | ~19 GB | 48–64 GB | strongest open option |
+| Memory | Pull | Disk | Notes |
+|--------|------|------|-------|
+| 16 GB | `ollama pull gpt-oss:20b` | ~14 GB | OpenAI's open-weights model; the consensus 16 GB pick |
+| 32 GB | `ollama pull qwen3-coder:30b` | ~19 GB | 30B MoE (3.3B active), 256K context — the mainstream default |
+| 32 GB, agent work | `ollama pull devstral-small-2:24b` | ~15 GB | Mistral's agent-first coder (~66% SWE-bench Verified), 384K context |
+| 64 GB+ | `ollama pull qwen3-coder-next` | ~52 GB | 80B MoE (3B active) — strongest local coding model today |
+| 96 GB+ | `ollama pull gpt-oss:120b` | ~65 GB | needs real headroom; don't attempt on 64 GB |
 
-Alternatives worth knowing: `deepseek-coder-v2` (MoE, strong on less-common languages),
-`gemma3` (general), `llama3.2` (small/general). Pull whichever:
+For inline **tab-autocomplete** (fill-in-the-middle), small-and-dense still wins:
+`qwen2.5-coder:1.5b` or `:7b` remain the right tools for that one job.
+
+Worth knowing, not defaults: **GLM-4.6** (MIT) is excellent but too large to run
+locally at these tiers — treat it as an API/cloud option. DeepSeek R1 distills are
+stale for coding now; `deepseek-coder-v2`, `gemma3`, `llama3.2` have aged out of
+the coding shortlist.
 
 ```bash
-ollama pull qwen2.5-coder        # add :14b or :32b for more capable, more RAM
+ollama pull qwen3-coder:30b      # or the pick for your RAM tier above
 ```
 
 ## Pointing tools at local (no vendor)
 
-**Any OpenAI-compatible / aider-style tool → Ollama:**
+**Any OpenAI-compatible / agent-style tool → Ollama:**
 
 ```bash
-export OLLAMA_API_BASE=http://127.0.0.1:11434
-# e.g. if you re-add aider later:
-#   aider --model ollama_chat/qwen2.5-coder
-# no API key needed; fully offline after the model download.
+export OLLAMA_API_BASE=http://127.0.0.1:11434         # aider-style tools
+export OPENAI_BASE_URL=http://127.0.0.1:11434/v1      # generic OpenAI-compatible tools
+# e.g. opencode — open-source terminal agent, bring-your-own-model, speaks to
+# Ollama directly (brew install opencode). The modern "neutral agent" pick;
+# aider still works too. No API key needed; fully offline after the pull.
 ```
 
 **Zed** — set the assistant provider to Ollama in Zed's settings (it speaks to a local
