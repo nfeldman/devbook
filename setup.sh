@@ -112,6 +112,10 @@ brew_cask sourcetree "/Applications/Sourcetree.app"
 # GitButler — Git client built around simultaneous / virtual branches (open source).
 brew_cask gitbutler "/Applications/GitButler.app"
 
+# Firefox — the independent, non-Chromium engine: cross-engine dev testing, and an
+# anti-monoculture daily driver (same posture as MODELS.md, applied to browsers).
+brew_cask firefox "/Applications/Firefox.app"
+
 # ---------------------------------------------------------------------------
 bold "5/8  Language runtimes (mise) + Python tooling (uv)"
 # ---------------------------------------------------------------------------

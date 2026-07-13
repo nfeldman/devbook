@@ -61,6 +61,7 @@ your own `~/.gitconfig` settings always win over it.
 - `git-delta` pretty diffs, `lazygit` git TUI, `gh` GitHub CLI; **Sourcetree** & **GitButler** (Git GUIs)
 - `jq`/`yq` for JSON/YAML, `direnv` per-project env, `tldr` concise man pages
 - `age` modern file encryption, `op` (1Password CLI) for secrets in scripts
+- **Firefox** — the independent, non-Chromium browser engine: cross-engine dev testing, and an anti-monoculture daily driver (the `MODELS.md` posture, applied to browsers)
 
 **Language runtimes**
 - **mise** — polyglot version manager (replaces nvm/pyenv/rbenv/g). Rust-fast, one tool for Node, Python, and Go. Installs Node LTS, Python 3.12, and Go globally; override per-project with a `mise.toml`. (Rust uses **rustup**; Lean uses **elan**.)
@@ -117,5 +118,6 @@ ships. `CLAUDE.md` makes that the default workflow rather than a thing to rememb
 
 - Prefer **WezTerm** over Ghostty? Replace the Ghostty line with `brew_cask wezterm` and skip `ghostty.config`.
 - Don't want Zed? Delete the `brew_cask zed` line.
+- Already have a browser you love? Delete the `brew_cask firefox` line.
 - Want tmux instead of Zellij? Swap `brew_formula zellij` for `brew_formula tmux` (configs differ).
 - Everything here is Homebrew-managed: `brew upgrade` keeps it all current.
