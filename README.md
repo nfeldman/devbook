@@ -39,6 +39,7 @@ shell changes load.
 | `zellij.kdl` | `~/.config/zellij/config.kdl` | Terminal multiplexer config. |
 | `zshrc-additions.zsh` | sourced from `~/.zshrc` | Shell init (mise, starship, zoxide, atuin, fzf, aliases). |
 | `gitconfig-devbook` | included from `~/.gitconfig` | Git defaults: delta pager, zdiff3, modern QoL flags. |
+| `AGENTS.md` | imported by `~/.claude/CLAUDE.md` | Machine-wide brief for AI coding agents: which tools are here and how to use them. |
 | `MODELS.md` | — | Model-sovereignty posture: local-first AI, swappable vendors. |
 | `machine-steward-reviewer.md` | — | Reusable reviewer persona for infra changes (see below). |
 | `CLAUDE.md` + `.claude/agents/` | — | Wires Claude Code into this repo's conventions and reviewer. |
@@ -76,6 +77,7 @@ your own `~/.gitconfig` settings always win over it.
 - **Ollama** — run LLMs locally, vendor-free (`ollama pull qwen3-coder:30b`, `ollama run ...`). Your sovereign default; see `MODELS.md` for picks by RAM tier.
 - **Claude Code** — Anthropic's agentic CLI, installed via the official native installer (signed, auto-updating, no Node dependency). Run `claude` in any repo. The one intentional vendor tool, balanced by keeping everything else local-capable.
 - **Zed** — fast, AI-native editor (its assistant can point at your local Ollama too).
+- **Agent context** (`AGENTS.md`) — a machine-wide brief that tells any coding agent which tools are installed here and how you expect them used (mise, uv, `rg`/`fd`, OrbStack, `op`, …). Wired into Claude Code globally; fan it out per-repo with `agents-here`. See below.
 - No cloud-agent CLI is installed by default — add a neutral one later (e.g. **opencode**: open source, bring-your-own-model), pointed at Ollama first. See `MODELS.md`.
 
 ## Recommended post-install steps
@@ -98,6 +100,30 @@ your own `~/.gitconfig` settings always win over it.
 - **Rust**: rustup already set stable as default → `cargo new`.
 - **Lean**: `lake new myproj` → `lake build`. elan picks the toolchain from the project's `lean-toolchain` file automatically.
 - **Env vars/secrets**: drop a `.envrc` in the project (`direnv allow`) — auto-loads on `cd`.
+
+## One brief for every agent (AGENTS.md)
+
+AI coding tools each read their own instruction file, so the same environment
+facts get repeated — or, worse, an agent guesses wrong (reaches for `pip`,
+assumes Docker Desktop, greps instead of `rg`). `AGENTS.md` is the single
+source of truth: **behavioral rules, not an inventory** — how this machine
+expects tools to be used.
+
+- **Machine-wide (automatic):** `setup.sh` stages `AGENTS.md` to
+  `~/.dotfiles/AGENTS.md` and adds one reversible marked block to
+  `~/.claude/CLAUDE.md` that `@`-imports it, so **Claude Code loads it in every
+  session, in every repo**. Your own global memory in that file is left intact;
+  delete the `<!-- >>> dev-env agents >>> -->` block to undo it.
+- **Per-repo (one command):** run `agents-here` in a project to write a starter
+  `AGENTS.md` and point the project-scoped tools at it — Claude Code
+  (`CLAUDE.md`) and GitHub Copilot (`.github/copilot-instructions.md`) via
+  symlink. **Zed, Cursor, and Codex read `AGENTS.md` natively**, so they need
+  nothing. Real (non-symlink) files are skipped, never clobbered.
+
+Why only Claude Code gets the *machine-global* wiring: it's the one agent
+devbook installs that has a true user-level memory file. Copilot, Zed, and
+Cursor are project-scoped by design — `agents-here` is the honest way to reach
+them, one repo at a time, from the same source file.
 
 ## Keeping it current
 

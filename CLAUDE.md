@@ -25,6 +25,11 @@ intervention must be reversible and legible.
   files that mise would ignore.
 - Dotfiles are staged to `~/.dotfiles` and symlinked; the files in this repo
   are the source of truth.
+- `AGENTS.md` is the machine-wide brief for AI coding agents. It's staged like
+  any dotfile and `@`-imported into `~/.claude/CLAUDE.md` via a reversible
+  marked block; the `agents-here` zsh helper fans it out to project-scoped tools
+  (Copilot, etc.) per-repo. Keep it behavioral (how tools are used), not an
+  inventory, and in step with what `setup.sh` actually installs.
 
 ## Before shipping a change
 

@@ -58,6 +58,39 @@ alias k='kubectl'
 # Refresh the core layers: brew packages (most tools), mise runtimes, Rust.
 alias dev-up='brew update && brew upgrade && mise upgrade && rustup update'
 
+# ---- agents-here: one AGENTS.md, every agent — for the CURRENT repo ---------
+# Machine-wide context is wired globally by setup.sh. This is PER-PROJECT: it
+# writes a starter AGENTS.md (if absent) and points the tools that insist on
+# their own filename at it, so Claude Code and Copilot read the same file. Zed,
+# Cursor, and Codex read AGENTS.md natively, so they need nothing. Existing REAL
+# files are never clobbered — it skips them so you can merge by hand.
+agents-here() {
+  emulate -L zsh
+  if [[ ! -f AGENTS.md ]]; then
+    cat > AGENTS.md <<'EOF'
+# Project context for AI agents
+
+<!-- One file, read by every coding agent. Describe how THIS repo is built,
+     tested, and run, plus any conventions an agent should follow. -->
+EOF
+    print "created AGENTS.md"
+  fi
+  local t want
+  for t in CLAUDE.md .github/copilot-instructions.md; do
+    # relative link so the checkout stays portable across machines
+    [[ "$t" == */* ]] && want="../AGENTS.md" || want="AGENTS.md"
+    if [[ -e "$t" && ! -L "$t" ]]; then
+      print "skip $t (real file — merge into AGENTS.md by hand)"
+      continue
+    fi
+    # provenance: don't silently repoint someone else's symlink
+    [[ -L "$t" && "$(readlink "$t")" != "$want" ]] && print "repointing $t (was -> $(readlink "$t"))"
+    mkdir -p "${t:h}"
+    ln -sf "$want" "$t"
+    print "linked $t -> AGENTS.md"
+  done
+}
+
 # ---- git defaults (delta pager, zdiff3) live in ----------------------------
 # ---- ~/.dotfiles/gitconfig-devbook, wired in via include.path by setup.sh --
 

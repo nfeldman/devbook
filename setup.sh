@@ -201,7 +201,7 @@ bold "8/8  Wiring up dotfiles"
 DOTREPO="$HOME/.dotfiles"
 mkdir -p "$DOTREPO" "$HOME/.config" "$HOME/.config/ghostty" "$HOME/.config/zellij"
 info "Staging dotfiles into $DOTREPO"
-for f in starship.toml ghostty.config zellij.kdl zshrc-additions.zsh gitconfig-devbook; do
+for f in starship.toml ghostty.config zellij.kdl zshrc-additions.zsh gitconfig-devbook AGENTS.md; do
   [[ -f "$DOTDIR/$f" ]] && cp "$DOTDIR/$f" "$DOTREPO/$f"
 done
 
@@ -216,6 +216,30 @@ link() { # $1 = source (in $DOTREPO), $2 = destination
     fi
     ln -sf "$1" "$2" && ok "linked $(basename "$2")"
   fi
+}
+
+# helper: keep ONE marked block current inside a file (creating the file if
+# absent). Everything outside the START/END markers is left untouched; re-running
+# replaces the block in place (idempotent), and deleting the block cleanly
+# reverses it — the same contract as the ~/.zshrc block below.
+ensure_marked_block() { # $1=file $2=start $3=end $4=payload
+  local file="$1" start="$2" end="$3" payload="$4"
+  mkdir -p "$(dirname "$file")"
+  touch "$file"
+  local had=0
+  grep -qF "$start" "$file" 2>/dev/null && had=1
+  if [[ "$had" == "1" ]]; then
+    local tmp; tmp="$(mktemp)"
+    awk -v s="$start" -v e="$end" '$0==s{skip=1} !skip{print} $0==e{skip=0}' "$file" > "$tmp"
+    cat "$tmp" > "$file"   # cat-over, not mv: keeps the file's inode/permissions
+    rm -f "$tmp"
+  fi
+  {
+    if [[ "$had" == "0" && -s "$file" ]]; then echo ""; fi
+    printf '%s\n' "$start"
+    printf '%s\n' "$payload"
+    printf '%s\n' "$end"
+  } >> "$file"
 }
 
 link "$DOTREPO/starship.toml"  "$HOME/.config/starship.toml"
@@ -260,6 +284,20 @@ fi
   echo "$MARKER_END"
 } >> "$ZSHRC"
 ok "zshrc block sources $DOTREPO/zshrc-additions.zsh"
+
+# AI agent context: make the staged AGENTS.md the machine-wide brief every agent
+# reads. Claude Code loads ~/.claude/CLAUDE.md (user memory) and honors @path
+# imports, so ONE marked block pulls in the staged file — your own global memory
+# in that file (if any) stays put, and removing the block undoes it. HTML-comment
+# markers stay invisible in the rendered markdown. Zed/Cursor/Codex read an
+# AGENTS.md natively (per-repo); the `agents-here` shell helper fans it out there.
+if [[ -f "$DOTREPO/AGENTS.md" ]]; then
+  ensure_marked_block "$HOME/.claude/CLAUDE.md" \
+    "<!-- >>> dev-env agents >>> -->" \
+    "<!-- <<< dev-env agents <<< -->" \
+    "@$DOTREPO/AGENTS.md"
+  ok "Claude Code user memory imports $DOTREPO/AGENTS.md"
+fi
 
 # Provenance: record what this run touched (conservator habit — cheap, legible).
 MANIFEST="$HOME/.config/dev-env/manifest.txt"
