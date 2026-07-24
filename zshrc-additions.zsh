@@ -89,6 +89,13 @@ EOF
     ln -sf "$want" "$t"
     print "linked $t -> AGENTS.md"
   done
+  # Honesty about reach: the machine-PRIVATE brief (if any) gets to Claude Code
+  # globally via ~/.claude/CLAUDE.md; everything written HERE is commit-safe
+  # public/project scope, so native AGENTS.md readers in this repo see no private
+  # content — by design, never write private bytes into a committable file.
+  if [[ -f "$HOME/.dotfiles.local/AGENTS.local.md" ]]; then
+    print "note: private machine brief reaches Claude Code globally; files written here stay commit-safe"
+  fi
 }
 
 # ---- git defaults (delta pager, zdiff3) live in ----------------------------
@@ -100,3 +107,9 @@ setopt HIST_IGNORE_ALL_DUPS
 setopt SHARE_HISTORY
 HISTSIZE=50000
 SAVEHIST=50000
+
+# ---- Private overlay hook (machine-local customizations) --------------------
+# This file is a staged, read-only copy that setup.sh overwrites on every run —
+# your OWN shell config belongs in ~/.dotfiles.local/zshrc.zsh (a private repo),
+# sourced LAST so it can override anything above. Absent ⇒ silent no-op.
+[[ -f "$HOME/.dotfiles.local/zshrc.zsh" ]] && source "$HOME/.dotfiles.local/zshrc.zsh"

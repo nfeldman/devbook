@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# Sentinel leak gate for THIS public repo: blocks any commit whose staged changes
+# contain a private sentinel string. The pattern list is machine-private
+# (~/.dotfiles.local/sentinels.txt, one fixed string per line) because a public
+# list would itself be the leak. No pattern file ⇒ no-op, so clones without a
+# private overlay are unaffected. Wired by setup.sh via core.hooksPath=githooks;
+# undo with: git config --unset core.hooksPath
+set -euo pipefail
+PATTERNS="$HOME/.dotfiles.local/sentinels.txt"
+[[ -s "$PATTERNS" ]] || exit 0
+# -F: sentinels are names, not regexes; -i: case differences don't launder a leak.
+if git diff --cached -U0 | grep -qiFf "$PATTERNS"; then
+  {
+    echo "BLOCKED: staged changes match a private sentinel (patterns: $PATTERNS)."
+    echo "This repo is public — private content belongs in ~/.dotfiles.local."
+    echo "First matches:"
+    # `|| true`: >5 matches makes head close the pipe early (SIGPIPE) — without
+    # the guard, pipefail would exit 141 here instead of reaching the exit 1.
+    git diff --cached -U0 | grep -iFf "$PATTERNS" | head -5 || true
+  } >&2
+  exit 1
+fi

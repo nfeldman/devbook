@@ -16,15 +16,19 @@ intervention must be reversible and legible.
 - Keep `README.md` in sync with `setup.sh`: the files table, the "what gets
   installed" lists, and the post-install steps mirror the script. Change one,
   change the other in the same edit.
-- `main` is deps-only; backup-system work lives on the `feature/backup` branch.
+- `main` carries the baseline: deps plus the private-overlay mechanism
+  (staging, composition, leak gate). Backup-system work lives on the
+  `feature/backup` branch.
 
 ## Toolchain conventions
 
 - Runtimes via mise (node / python / go) — **except** Rust (rustup) and Lean
   (elan): the canonical manager wins wherever it honors per-project toolchain
   files that mise would ignore.
-- Dotfiles are staged to `~/.dotfiles` and symlinked; the files in this repo
-  are the source of truth.
+- Dotfiles are staged to `~/.dotfiles` (read-only artifacts) and symlinked; the
+  files in this repo are the **public** source of truth. Machine-private
+  customizations live in `~/.dotfiles.local` (see README "Extending") — never
+  in this repo, and never edited into the staged middle.
 - `AGENTS.md` is the machine-wide brief for AI coding agents. It's staged like
   any dotfile and `@`-imported into `~/.claude/CLAUDE.md` via a reversible
   marked block; the `agents-here` zsh helper fans it out to project-scoped tools

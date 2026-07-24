@@ -18,9 +18,11 @@ Run it in a local, interactive terminal — the first run installs Homebrew, whi
 asks for your password once.
 
 The script is **idempotent** — safe to run again anytime. It checks before
-installing, backs up any config it would overwrite, and maintains a single
-marked block in `~/.zshrc` that re-runs refresh in place — so re-running
-`./setup.sh` always delivers the latest shell config too.
+installing, refreshes only the configs it owns (a config you've replaced with a
+real file is yours — it's skipped and reported, never clobbered; see
+**Extending** below), and maintains a single marked block in `~/.zshrc` that
+re-runs refresh in place — so re-running `./setup.sh` always delivers the
+latest shell config too.
 
 It also **self-lints**: it installs `shellcheck` and runs it against itself at the
 end (non-fatal — warnings print but never abort the run). Skip that pass with
@@ -43,10 +45,14 @@ shell changes load.
 | `MODELS.md` | — | Model-sovereignty posture: local-first AI, swappable vendors. |
 | `machine-steward-reviewer.md` | — | Reusable reviewer persona for infra changes (see below). |
 | `CLAUDE.md` + `.claude/agents/` | — | Wires Claude Code into this repo's conventions and reviewer. |
+| `githooks/pre-commit` | wired via `core.hooksPath` | Sentinel leak gate: blocks commits matching private patterns (the patterns live outside this repo — see Extending). |
 
 `setup.sh` symlinks the configs into place for you (staged via `~/.dotfiles`),
 and wires `gitconfig-devbook` in with a single reversible `include.path` line —
-your own `~/.gitconfig` settings always win over it.
+your own `~/.gitconfig` settings always win over it. The staged copies in
+`~/.dotfiles` are **read-only artifacts**: edit this repo (public) or
+`~/.dotfiles.local` (private), never the staged middle — a stray edit there
+fails loudly instead of being silently lost on the next run.
 
 ## What gets installed and why
 
@@ -113,7 +119,11 @@ expects tools to be used.
   `~/.dotfiles/AGENTS.md` and adds one reversible marked block to
   `~/.claude/CLAUDE.md` that `@`-imports it, so **Claude Code loads it in every
   session, in every repo**. Your own global memory in that file is left intact;
-  delete the `<!-- >>> dev-env agents >>> -->` block to undo it.
+  delete the `<!-- >>> dev-env agents >>> -->` block to undo it. If a private
+  overlay brief exists (`~/.dotfiles.local/AGENTS.local.md`), setup composes
+  public + private into `~/.config/dev-env/AGENTS.composed.md` and imports that
+  instead — agents without a safe private channel simply get the public brief,
+  because private content is never written anywhere a `git push` could publish.
 - **Per-repo (one command):** run `agents-here` in a project to write a starter
   `AGENTS.md` and point the project-scoped tools at it — Claude Code
   (`CLAUDE.md`) and GitHub Copilot (`.github/copilot-instructions.md`) via
@@ -124,6 +134,48 @@ Why only Claude Code gets the *machine-global* wiring: it's the one agent
 devbook installs that has a true user-level memory file. Copilot, Zed, and
 Cursor are project-scoped by design — `agents-here` is the honest way to reach
 them, one repo at a time, from the same source file.
+
+## Extending — the private overlay (`~/.dotfiles.local`)
+
+devbook is a **public baseline**. Anything personal — private aliases, a work
+git identity, machine-specific agent context — belongs in `~/.dotfiles.local`,
+a **private repo** the baseline knows how to consume but never reads into
+itself (`setup.sh` only ever stages files from this checkout, so private
+content structurally cannot transit into the public layer).
+
+To start one:
+
+```bash
+mkdir -p ~/.dotfiles.local && git init ~/.dotfiles.local
+```
+
+then add any of the files below — **all optional** — and re-run `./setup.sh`;
+the hooks notice whatever exists. On a fresh machine the order doesn't matter:
+clone devbook and run it, restore or clone your overlay to `~/.dotfiles.local`,
+run `./setup.sh` once more — both orders converge on the same state.
+
+- `zshrc.zsh` — sourced *last* by the shell init, so it overrides anything here.
+- `gitconfig` — wired in as a second `include.path`; unwired automatically if
+  the overlay disappears.
+- `ghostty.config` — pulled in by an optional include (missing file = no-op).
+- `AGENTS.local.md` — composed with the public brief (see the agents section).
+- `sentinels.txt` — private strings the pre-commit gate blocks from ever being
+  committed here, one fixed string per line, matched case-insensitively (the
+  hook ships in this repo; the patterns stay private).
+- `setup.sh` — your own installer, run (contained) at the end of this one.
+  Skip it with `SKIP_LOCAL=1 ./setup.sh`.
+
+Three layers, three fates: **this repo** is the public source (GitHub protects
+it), **`~/.dotfiles.local`** is the private source (your backups protect it),
+and **`~/.dotfiles` + `~/.config/dev-env`** are disposable artifacts —
+re-running regenerates them, so protect nothing there. Whole-file configs with
+no include mechanism (starship, zellij) use the takeover contract instead:
+replace the symlink with a real file to own it — setup then skips it and
+reports the divergence (also into `~/.config/dev-env/manifest.txt`); delete
+your file and re-run to return to baseline. Removing the overlay entirely and
+re-running restores the exactly-public state: composite deleted, include
+unwired, hooks silent (to unwire the leak-gate hook itself:
+`git config --unset core.hooksPath` in this checkout).
 
 ## Keeping it current
 
