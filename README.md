@@ -71,7 +71,7 @@ fails loudly instead of being silently lost on the next run.
 - **Firefox** — the independent, non-Chromium browser engine: cross-engine dev testing, and an anti-monoculture daily driver (the `MODELS.md` posture, applied to browsers)
 
 **Language runtimes**
-- **mise** — polyglot version manager (replaces nvm/pyenv/rbenv/g). Rust-fast, one tool for Node, Python, and Go. Installs Node LTS, Python 3.12, and Go globally; override per-project with a `mise.toml`. (Rust uses **rustup**; Lean uses **elan**.)
+- **mise** — polyglot version manager (replaces nvm/pyenv/rbenv/g). Rust-fast, one tool for Node, Python, Go, and Bun. Installs Node LTS, Python 3.12, Go, and Bun globally; override per-project with a `mise.toml`. (Rust uses **rustup**; Lean uses **elan**.)
 - **uv** — Astral's ultrafast Python package/project manager. Use it for venvs and dependencies (`uv init`, `uv add`, `uv run`). Great for ML/AI work.
 - **elan** — official Lean toolchain manager (rustup's equivalent for Lean). Installs latest stable Lean 4 globally and auto-switches to whatever a project's `lean-toolchain` file pins.
 
@@ -101,6 +101,7 @@ fails loudly instead of being silently lost on the next run.
 ## Per-project workflow (the modern flow)
 
 - **Node/TS**: `mise use node@lts` → `npm create vite@latest` or `pnpm`, etc.
+- **Bun**: available globally via mise; pin a project with `mise use bun@<version>`.
 - **Python/ML**: `uv init myproj && cd myproj && uv add pandas torch` → `uv run python ...`. No manual venv activation.
 - **Go**: `mise use go@latest` → `go mod init`.
 - **Rust**: rustup already set stable as default → `cargo new`.

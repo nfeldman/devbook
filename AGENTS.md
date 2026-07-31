@@ -7,9 +7,9 @@ for specifics. This file is the source of truth; `setup.sh` stages it to
 agent sees the same brief.
 
 ## Toolchains — always go through the version manager
-- Runtimes are managed by **mise** (node LTS, python 3.12, go). Never assume a
-  system version; the mise shims resolve the right one, and per-project pins
-  live in a `mise.toml`.
+- Runtimes are managed by **mise** (node LTS, python 3.12, go, bun). Never
+  assume a system version; the mise shims resolve the right one, and
+  per-project pins live in a `mise.toml`.
 - **Rust** uses rustup (`cargo`), **Lean** uses elan — not mise.
 - A bare `java` on PATH may be a broken system stub; use the mise-provided JDK.
 
@@ -18,7 +18,8 @@ agent sees the same brief.
   not `pip install` into the system interpreter or hand-roll `python -m venv`.
 
 ## Node — mise + corepack
-- node LTS via mise; **bun** is available. Use `corepack` for pnpm/yarn.
+- node LTS and bun latest are global mise defaults. Use `corepack` for
+  pnpm/yarn.
 
 ## Prefer the modern CLIs (installed and expected)
 - Search and inspect with **rg** (ripgrep) and **fd**, not grep/find. **bat**

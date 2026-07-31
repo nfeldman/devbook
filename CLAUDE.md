@@ -22,7 +22,7 @@ intervention must be reversible and legible.
 
 ## Toolchain conventions
 
-- Runtimes via mise (node / python / go) — **except** Rust (rustup) and Lean
+- Runtimes via mise (node / python / go / bun) — **except** Rust (rustup) and Lean
   (elan): the canonical manager wins wherever it honors per-project toolchain
   files that mise would ignore.
 - Dotfiles are staged to `~/.dotfiles` (read-only artifacts) and symlinked; the

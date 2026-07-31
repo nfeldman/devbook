@@ -134,12 +134,14 @@ else
   brew install rustup
 fi
 
-# Install common runtimes via mise (global defaults). Re-running is a no-op.
+# Install common runtimes via mise (global defaults). Safe to re-run: it
+# converges the selected defaults and installs newer "latest" releases.
 if command -v mise >/dev/null 2>&1; then
-  info "Installing global runtimes via mise (node, python, go)..."
+  info "Installing global runtimes via mise (node, python, go, bun)..."
   mise use -g node@lts    || warn "mise node failed"
   mise use -g python@3.12 || warn "mise python failed"
   mise use -g go@latest   || warn "mise go failed"
+  mise use -g bun@latest  || warn "mise bun failed"
   # mise use -g does NOT affect this non-interactive shell's PATH. Add the shims dir
   # now so the runtimes it installed resolve later in THIS script.
   export PATH="$HOME/.local/share/mise/shims:$PATH"

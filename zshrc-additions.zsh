@@ -9,7 +9,7 @@ if [[ -d "${HOMEBREW_PREFIX:-/opt/homebrew}/opt/rustup/bin" ]]; then
   export PATH="${HOMEBREW_PREFIX:-/opt/homebrew}/opt/rustup/bin:$PATH"
 fi
 
-# ---- mise: language runtimes (node/python/go; rust=rustup, lean=elan) -----
+# ---- mise: language runtimes (node/python/go/bun; rust=rustup, lean=elan) ---
 if command -v mise >/dev/null 2>&1; then
   eval "$(mise activate zsh)"
 fi
