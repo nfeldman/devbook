@@ -195,6 +195,10 @@ ships. `CLAUDE.md` makes that the default workflow rather than a thing to rememb
 
 ## Notes & swaps
 
+- **Future baseline candidate:** `ruff`. Python repositories commonly make it a CI gate, and
+  a missing global binary forces an otherwise unnecessary `uvx` download during local
+  validation. It is small, broadly useful, and available as a Homebrew formula; consider
+  adding it to a future `setup.sh` update after the usual idempotency and README-sync review.
 - Prefer **WezTerm** over Ghostty? Replace the Ghostty line with `brew_cask wezterm` and skip `ghostty.config`.
 - Don't want Zed? Delete the `brew_cask zed` line.
 - Already have a browser you love? Delete the `brew_cask firefox` line.
