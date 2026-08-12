@@ -199,6 +199,11 @@ ships. `CLAUDE.md` makes that the default workflow rather than a thing to rememb
   a missing global binary forces an otherwise unnecessary `uvx` download during local
   validation. It is small, broadly useful, and available as a Homebrew formula; consider
   adding it to a future `setup.sh` update after the usual idempotency and README-sync review.
+- **Future agent-workflow candidate:** `pecia`. Local dogfood found its deterministic,
+  append-only work ledger useful for long-running roadmap custody. Do not baseline it yet:
+  Pecia v2's `init` and `doctor` currently disagree about the merge attribute, and adopter
+  repositories still need a portable hook and distribution contract. Reconsider after those
+  are resolved and the usual idempotency, clean-export, and README-sync checks pass.
 - Prefer **WezTerm** over Ghostty? Replace the Ghostty line with `brew_cask wezterm` and skip `ghostty.config`.
 - Don't want Zed? Delete the `brew_cask zed` line.
 - Already have a browser you love? Delete the `brew_cask firefox` line.
