@@ -67,7 +67,7 @@ fails loudly instead of being silently lost on the next run.
 **Modern CLI toolkit** (drop-in upgrades for old Unix tools)
 - `eza` (ls), `bat` (cat), `fd` (find), `ripgrep`/`rg` (grep), `sd` (sed), `dust` (du), `bottom`/`btm` (top)
 - `fzf` fuzzy finder (ctrl-t), `zoxide` smart cd (`z`), `atuin` searchable history (owns ctrl-r)
-- `git-delta` pretty diffs, `lazygit` git TUI, `gh` GitHub CLI; **Sourcetree** & **GitButler** (Git GUIs)
+- `git-delta` pretty diffs, `lazygit` git TUI, `gh` GitHub CLI; **Sourcetree** (Git GUI)
 - `jq`/`yq` for JSON/YAML, `direnv` per-project env, `tldr` concise man pages
 - `age` modern file encryption, `op` (1Password CLI) for secrets in scripts
 - **Firefox** — the independent, non-Chromium browser engine: cross-engine dev testing, and an anti-monoculture daily driver (the `MODELS.md` posture, applied to browsers)

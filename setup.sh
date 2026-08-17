@@ -246,8 +246,6 @@ brew_cask 1password-cli ""
 # Sourcetree — free, full-featured Git GUI (Atlassian). One-time account at install;
 # works with GitHub/any host afterward, no ongoing Atlassian tie.
 brew_cask sourcetree "/Applications/Sourcetree.app"
-# GitButler — Git client built around simultaneous / virtual branches (open source).
-brew_cask gitbutler "/Applications/GitButler.app"
 
 # Firefox — the independent, non-Chromium engine: cross-engine dev testing, and an
 # anti-monoculture daily driver (same posture as MODELS.md, applied to browsers).
