@@ -1,0 +1,17 @@
+services:
+  agent-vault:
+    # Agent Vault v0.39.1; the digest is the immutable multi-architecture image manifest.
+    image: infisical/agent-vault@sha256:d7bbbc3947f23d08342410ab3b088b0f2336eb72a5a045a06151431e74812b4e
+    restart: unless-stopped
+    environment:
+      AGENT_VAULT_MASTER_PASSWORD: "${AGENT_VAULT_MASTER_PASSWORD:?Set AGENT_VAULT_MASTER_PASSWORD in the private env file}"
+      AGENT_VAULT_ADDR: "http://127.0.0.1:14321"
+    ports:
+      - "127.0.0.1:14321:14321"
+      - "127.0.0.1:14322:14322"
+    volumes:
+      - agent-vault-data:/data
+
+volumes:
+  agent-vault-data:
+    name: devbook-agent-vault-data

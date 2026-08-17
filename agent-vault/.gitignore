@@ -1,0 +1,5 @@
+.env
+agent.env
+services.yaml
+backups/
+*.tar.gz

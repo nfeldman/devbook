@@ -43,6 +43,8 @@ shell changes load.
 | `gitconfig-devbook` | included from `~/.gitconfig` | Git defaults: delta pager, zdiff3, modern QoL flags. |
 | `AGENTS.md` | imported by `~/.claude/CLAUDE.md` | Machine-wide brief for AI coding agents: which tools are here and how to use them. |
 | `MODELS.md` | — | Model-sovereignty posture: local-first AI, swappable vendors. |
+| `HISTORY.md` | — | Sparse major-milestone history; routine detail remains in Git history. |
+| `agent-vault/` | — | Optional pinned local Agent Vault deployment; keeps configured API credentials out of agent transcripts. |
 | `machine-steward-reviewer.md` | — | Reusable reviewer persona for infra changes (see below). |
 | `CLAUDE.md` + `.claude/agents/` | — | Wires Claude Code into this repo's conventions and reviewer. |
 | `githooks/pre-commit` | wired via `core.hooksPath` | Sentinel leak gate: blocks commits matching private patterns (the patterns live outside this repo — see Extending). |
@@ -78,6 +80,7 @@ fails loudly instead of being silently lost on the next run.
 **Containers / DevOps**
 - **OrbStack** — fast, light Docker Desktop replacement (Docker + a local Kubernetes). Big battery/RAM win.
 - `kubectl`, `k9s` (cluster TUI), `helm`.
+- **Agent Vault** — optional loopback-only credential broker for low-value agent API access. Enable with `INSTALL_AGENT_VAULT=1 ./setup.sh`; see `agent-vault/README.md` for the threat model and recovery contract.
 
 **AI-forward**
 - **Ollama** — run LLMs locally, vendor-free (`ollama pull qwen3-coder:30b`, `ollama run ...`). Your sovereign default; see `MODELS.md` for picks by RAM tier.
@@ -97,6 +100,7 @@ fails loudly instead of being silently lost on the next run.
 4. **atuin** (optional): `atuin register` to sync/encrypt history across machines, or just use it locally.
 5. **Ollama**: `ollama pull qwen3-coder:30b` (32 GB RAM; see `MODELS.md` for the 16 GB and 64 GB+ picks).
 6. **Claude Code**: run `claude` in a project and follow the login prompt.
+7. **Agent Vault (optional)**: start OrbStack, run `INSTALL_AGENT_VAULT=1 ./setup.sh`, save the generated master password in 1Password without printing it, then complete the one-time setup in `agent-vault/README.md`.
 
 ## Per-project workflow (the modern flow)
 
@@ -183,6 +187,7 @@ unwired, hooks silent (to unwire the leak-gate hook itself:
 - `dev-up` (alias installed by the zshrc block) refreshes everything in one go:
   brew packages, mise runtimes, and the Rust toolchain.
 - Re-running `./setup.sh` anytime picks up new additions to this repo — it's idempotent.
+- Agent Vault is opt-in and stateful: re-run `INSTALL_AGENT_VAULT=1 ./setup.sh` to reconcile its pinned container, and preserve both `~/.config/dev-env/agent-vault/.env` and the `devbook-agent-vault-data` volume when migrating. Never place credentials in the repo; the complete local procedure is in `agent-vault/README.md`.
 
 ## Reviewing changes with AI (dogfooding)
 

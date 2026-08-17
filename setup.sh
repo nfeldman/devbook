@@ -19,6 +19,143 @@ ok()   { printf "\033[1;32m ok\033[0m %s\n" "$1"; }
 warn() { printf "\033[1;33m !!\033[0m %s\n" "$1"; }
 
 DOTDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+AGENT_VAULT_VERSION="0.39.1"
+AGENT_VAULT_IMAGE="infisical/agent-vault@sha256:d7bbbc3947f23d08342410ab3b088b0f2336eb72a5a045a06151431e74812b4e"
+AGENT_VAULT_CLI_URL="https://github.com/Infisical/agent-vault/releases/download/v0.39.1/agent-vault_0.39.1_darwin_arm64.tar.gz"
+AGENT_VAULT_CLI_SHA256="6cb8c758e915a1575221e04cd1610b06f7218500bd15d30f29565d1930826f44"
+
+# Optional local credential broker. It is deliberately opt-in: the devbook
+# baseline should not start a stateful service on every machine, but the
+# low-friction path is one command when an agent needs transcript-safe API access.
+setup_agent_vault() {
+  [[ "${INSTALL_AGENT_VAULT:-0}" == "1" ]] || return 0
+
+  if ! command -v docker >/dev/null 2>&1; then
+    warn "Agent Vault requested, but Docker is not on PATH — start OrbStack and re-run with INSTALL_AGENT_VAULT=1"
+    return 1
+  fi
+  if ! docker info >/dev/null 2>&1; then
+    warn "Agent Vault requested, but the Docker daemon is unavailable — start OrbStack and re-run with INSTALL_AGENT_VAULT=1"
+    return 1
+  fi
+  if ! command -v openssl >/dev/null 2>&1; then
+    warn "Agent Vault requested, but openssl is missing — install it and re-run with INSTALL_AGENT_VAULT=1"
+    return 1
+  fi
+
+  local state_dir env_file compose_file tmp_file master_password
+  state_dir="${AGENT_VAULT_STATE_DIR:-$HOME/.config/dev-env/agent-vault}"
+  env_file="${AGENT_VAULT_ENV_FILE:-$state_dir/.env}"
+  compose_file="$DOTDIR/agent-vault/compose.yaml"
+  [[ -f "$compose_file" ]] || { warn "Agent Vault compose file is missing: $compose_file"; return 1; }
+
+  if [[ -L "$state_dir" ]]; then
+    warn "Agent Vault state directory must not be a symlink: $state_dir"
+    return 1
+  fi
+  mkdir -p "$state_dir"
+  chmod 700 "$state_dir"
+  local volume_exists=0
+  docker volume inspect devbook-agent-vault-data >/dev/null 2>&1 && volume_exists=1
+  if [[ -f "$env_file" && "$volume_exists" == "0" && "${AGENT_VAULT_ALLOW_EMPTY_REINIT:-0}" != "1" ]]; then
+    warn "Agent Vault master-password file exists but devbook-agent-vault-data is missing: $env_file"
+    warn "Refusing to create a fresh empty vault; set AGENT_VAULT_ALLOW_EMPTY_REINIT=1 only after confirming the old data is disposable."
+    return 1
+  fi
+  if [[ ! -f "$env_file" ]]; then
+    if [[ "$volume_exists" == "1" ]]; then
+      warn "Agent Vault data exists but its master-password file is missing: $env_file"
+      warn "Restore the matching password file before starting the existing vault; refusing to create a new one."
+      return 1
+    fi
+    tmp_file="$(mktemp "$state_dir/.env.XXXXXX")"
+    chmod 600 "$tmp_file"
+    if ! master_password="$(openssl rand -hex 32)"; then
+      rm -f "$tmp_file"
+      warn "Could not generate the Agent Vault master password"
+      return 1
+    fi
+    printf 'AGENT_VAULT_MASTER_PASSWORD=%s\n' "$master_password" > "$tmp_file"
+    unset master_password
+    mv "$tmp_file" "$env_file"
+    chmod 600 "$env_file"
+    warn "Generated the Agent Vault master password at $env_file; copy it into 1Password without printing it"
+  elif [[ ! -f "$env_file" || -L "$env_file" || ! -r "$env_file" ]]; then
+    warn "Agent Vault env file must be a readable regular file, not a symlink: $env_file"
+    return 1
+  elif [[ "$(stat -f '%u' "$env_file")" != "$(id -u)" || "$(stat -f '%Lp' "$env_file")" != "600" ]]; then
+    warn "Agent Vault env file must be owned by this user with mode 600: $env_file"
+    return 1
+  fi
+
+  info "Starting Agent Vault ($AGENT_VAULT_IMAGE)"
+  docker compose \
+    --project-name devbook-agent-vault \
+    --file "$compose_file" \
+    --env-file "$env_file" \
+    up --detach
+
+  # The container contains a Linux CLI, so fetch the macOS ARM64 release asset
+  # separately. Verify its official checksum; never run the unpinned installer script.
+  local cli_path tmp_archive tmp_cli
+  cli_path="$HOME/.local/bin/agent-vault-$AGENT_VAULT_VERSION"
+  mkdir -p "$HOME/.local/bin"
+  if ! command -v shasum >/dev/null 2>&1; then
+    warn "Agent Vault requested, but shasum is missing; refusing an unverified CLI install"
+    return 1
+  fi
+  tmp_archive="$(mktemp "$HOME/.local/bin/.agent-vault-archive.XXXXXX")"
+  tmp_cli="$(mktemp "$HOME/.local/bin/.agent-vault-cli.XXXXXX")"
+  if ! curl --proto '=https' --proto-redir '=https' --tlsv1.2 -fsSL "$AGENT_VAULT_CLI_URL" -o "$tmp_archive"; then
+    rm -f "$tmp_archive" "$tmp_cli"
+    warn "could not download the Agent Vault macOS CLI release asset"
+    return 1
+  fi
+  if ! printf '%s  %s\n' "$AGENT_VAULT_CLI_SHA256" "$tmp_archive" | shasum -a 256 -c - >/dev/null 2>&1; then
+    rm -f "$tmp_archive" "$tmp_cli"
+    warn "Agent Vault macOS CLI checksum verification failed"
+    return 1
+  fi
+  if ! tar -xOf "$tmp_archive" agent-vault > "$tmp_cli"; then
+    rm -f "$tmp_archive" "$tmp_cli"
+    warn "could not extract the Agent Vault macOS CLI release asset"
+    return 1
+  fi
+  if [[ -e "$cli_path" || -L "$cli_path" ]]; then
+    local cli_matches=0
+    if [[ ! -L "$cli_path" && -x "$cli_path" ]] && cmp -s "$tmp_cli" "$cli_path"; then
+      cli_matches=1
+    fi
+    if [[ "$cli_matches" != "1" ]]; then
+      rm -f "$tmp_archive" "$tmp_cli"
+      warn "existing Agent Vault CLI differs from the pinned $AGENT_VAULT_VERSION binary: $cli_path"
+      return 1
+    fi
+    rm -f "$tmp_archive" "$tmp_cli"
+    ok "agent-vault CLI matches pinned $AGENT_VAULT_VERSION"
+  else
+    chmod 755 "$tmp_cli"
+    mv "$tmp_cli" "$cli_path"
+    rm -f "$tmp_archive"
+    ok "installed matching agent-vault CLI at $cli_path"
+  fi
+
+  local ready=0
+  for _ in {1..15}; do
+    if curl -fsS --max-time 3 http://127.0.0.1:14321/register >/dev/null 2>&1 \
+      && nc -z 127.0.0.1 14322 >/dev/null 2>&1; then
+      ready=1
+      break
+    fi
+    sleep 2
+  done
+  if [[ "$ready" != "1" ]]; then
+    warn "Agent Vault did not pass its API/proxy readiness check"
+    docker compose --project-name devbook-agent-vault --file "$compose_file" --env-file "$env_file" ps
+    return 1
+  fi
+  ok "Agent Vault API/proxy are listening on loopback ports 14321/14322"
+}
 
 # ---------------------------------------------------------------------------
 bold "1/8  Homebrew"
@@ -171,6 +308,7 @@ brew_cask orbstack "/Applications/OrbStack.app"  # fast, light Docker Desktop re
 brew_formula kubectl      # kubernetes CLI
 brew_formula k9s          # kubernetes TUI
 brew_formula helm         # kubernetes package manager
+setup_agent_vault
 
 # ---------------------------------------------------------------------------
 bold "7/8  AI-forward tooling"
@@ -409,6 +547,7 @@ mkdir -p "$(dirname "$MANIFEST")"
   command -v brew >/dev/null 2>&1 && echo "brew:            $(brew --version | head -1)"
   # Record what the two curl-installed tools (brew above, claude here) resolved to.
   command -v claude >/dev/null 2>&1 && echo "claude:          $(claude --version 2>/dev/null | head -1)" || true
+  [[ "${INSTALL_AGENT_VAULT:-0}" == "1" ]] && echo "agent-vault:     requested (v$AGENT_VAULT_VERSION, immutable image digest)"
 } >> "$MANIFEST"
 ok "recorded run in $MANIFEST"
 
@@ -436,3 +575,4 @@ echo "  2) Font: IosevkaTerm Nerd Font everywhere."
 echo "  3) Run 'mise doctor' and 'atuin register' (optional history sync)."
 echo "  4) 'ollama pull qwen3-coder:30b' for a local, vendor-free coding model (see MODELS.md for your RAM tier)."
 echo "  5) 'claude' to start Claude Code (the one intentional vendor tool) in any project."
+[[ "${INSTALL_AGENT_VAULT:-0}" == "1" ]] && echo "  6) Agent Vault: open http://127.0.0.1:14321/register and finish the one-time setup in agent-vault/README.md."
