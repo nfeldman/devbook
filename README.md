@@ -1,11 +1,33 @@
-# Lean, modern, AI-forward macOS dev environment
+# devbook — a Mac environment that knows what it owns
 
-A one-shot setup for a fresh Mac. Run one script and you get a fast terminal, a
-polished shell, modern CLI tools, polyglot language runtimes, container tooling,
-and local + agentic AI tools. Everything is chosen to be lightweight and current
-as of mid-2026.
+devbook builds a modern shell and polyglot development stack for human and AI
+coding workflows. Its central contract is simple: repository-managed configs
+are symlinks; replace one with a real file and the next run leaves it alone and
+records the handoff.
 
-## How to run
+Most dotfiles repositories optimize for getting onto a machine. devbook also
+designs for the second run, private state, agent behavior, and an eventual exit.
+
+## Why this is different
+
+- **Ownership is a state, not an accident.** Repository-managed configs are
+  symlinks. Replace one with a real file and devbook treats it as user-owned:
+  the baseline is skipped, never silently restored over it, and the divergence
+  is recorded in a persistent manifest.
+- **Public, private, and generated material have different fates.** This public
+  repository is the baseline, `~/.dotfiles.local` is an optional private source,
+  and `~/.dotfiles` is a disposable read-only artifact. Private agent context is
+  composed outside the public staged tree.
+- **AI tools inherit an environment contract.** One behavioral brief tells
+  coding agents which runtimes, package managers, containers, and secret-handling
+  conventions the machine actually uses. A separate infrastructure reviewer
+  makes tradeoffs between current tooling and long-term recoverability explicit.
+- **Security claims stop at their real boundary.** The optional Agent Vault
+  wrapper admits only three connection fields from an owned mode-`600` file,
+  keeps its broker token out of command-line arguments, and confines the API and
+  proxy to loopback. It does not contain a malicious process on the same host.
+
+## Quick start
 
 Clone (or copy) this folder anywhere, then:
 
@@ -14,22 +36,57 @@ chmod +x setup.sh
 ./setup.sh
 ```
 
-Run it in a local, interactive terminal — the first run installs Homebrew, which
-asks for your password once.
+Run it in a local, interactive terminal. The first run may install Homebrew,
+which asks for your password once. When setup finishes, quit and reopen the
+terminal (or open Ghostty) so the shell changes load.
 
-The script is **idempotent** — safe to run again anytime. It checks before
-installing, refreshes only the configs it owns (a config you've replaced with a
-real file is yours — it's skipped and reported, never clobbered; see
-**Extending** below), and maintains a single marked block in `~/.zshrc` that
-re-runs refresh in place — so re-running `./setup.sh` always delivers the
-latest shell config too.
+The script is designed to converge on repeated runs. It checks before installing,
+refreshes only the configs it owns, and maintains one replace-in-place block in
+`~/.zshrc`. A config replaced with a real file is yours: it is skipped and
+reported rather than clobbered. See **Extending** for that ownership contract.
 
 It also **self-lints**: it installs `shellcheck` and runs it against itself at the
 end (non-fatal — warnings print but never abort the run). Skip that pass with
 `SKIP_SELFCHECK=1 ./setup.sh`.
 
-When it finishes: **quit and reopen your terminal (or open Ghostty)** so the
-shell changes load.
+## Evidence and its boundary
+
+Run the same checks as CI without changing machine configuration:
+
+```bash
+bash scripts/check.sh
+```
+
+[![Contract checks](https://github.com/nfeldman/devbook/actions/workflows/contract-checks.yml/badge.svg)](https://github.com/nfeldman/devbook/actions/workflows/contract-checks.yml)
+
+That command gates Bash syntax, ShellCheck, rendered Compose configuration, and
+six contract tests. The tests observe both success and failure paths for the
+private sentinel gate, real-file takeover, marked-block convergence, incomplete
+vault recovery pairs, and the Agent Vault wrapper's input handling.
+
+CI does not reproduce a fresh Mac installation, and does not claim to. The
+installer's package-manager paths, GUI applications, and a full second machine
+run still require release-time testing on macOS. The automated checks cover the
+state transitions and security boundaries that can be exercised without
+mutating the runner's configured machine state.
+
+## Architecture at a glance
+
+```mermaid
+flowchart LR
+    R["Public source<br/>this repository"] --> S["Read-only staged artifacts<br/>~/.dotfiles"]
+    S --> C["Repo-managed configs<br/>symlinks"]
+    C -->|"replace with a real file"| U["User-owned config<br/>skipped + reported"]
+    P["Private source<br/>~/.dotfiles.local"] --> E["Private composed brief<br/>~/.config/dev-env"]
+    S --> E
+    S --> A["Agent behavior brief"]
+    E --> A
+```
+
+Neither staging nor composition copies private overlay content into this
+repository or into the public staged tree. Private overlay setup code, if you
+supply it, runs on your machine with your privileges. The fuller reasoning and
+threat boundaries are in [the design notes](docs/design.md).
 
 ## Files in this bundle
 
@@ -44,10 +101,12 @@ shell changes load.
 | `AGENTS.md` | imported by `~/.claude/CLAUDE.md` | Machine-wide brief for AI coding agents: which tools are here and how to use them. |
 | `MODELS.md` | — | Model-sovereignty posture: local-first AI, swappable vendors. |
 | `HISTORY.md` | — | Sparse major-milestone history; routine detail remains in Git history. |
-| `agent-vault/` | — | Optional pinned local Agent Vault deployment; keeps configured API credentials out of agent transcripts. |
+| `agent-vault/` | — | Optional pinned local broker and mode-checked wrapper; its README defines the boundary it does and does not hold. |
 | `machine-steward-reviewer.md` | — | Reusable reviewer persona for infra changes (see below). |
 | `CLAUDE.md` + `.claude/agents/` | — | Wires Claude Code into this repo's conventions and reviewer. |
 | `githooks/pre-commit` | wired via `core.hooksPath` | Sentinel leak gate: blocks commits matching private patterns (the patterns live outside this repo — see Extending). |
+| `scripts/check.sh` + `tests/` | — | Static checks and isolated executable contract tests that leave configured machine state untouched. |
+| `docs/design.md` | — | Design cases, explicit claim boundaries, and validation map. |
 
 `setup.sh` symlinks the configs into place for you (staged via `~/.dotfiles`),
 and wires `gitconfig-devbook` in with a single reversible `include.path` line —
@@ -127,8 +186,8 @@ expects tools to be used.
   delete the `<!-- >>> dev-env agents >>> -->` block to undo it. If a private
   overlay brief exists (`~/.dotfiles.local/AGENTS.local.md`), setup composes
   public + private into `~/.config/dev-env/AGENTS.composed.md` and imports that
-  instead — agents without a safe private channel simply get the public brief,
-  because private content is never written anywhere a `git push` could publish.
+  instead. The composition path writes private content only to that local,
+  mode-`600` file; agents without a private overlay receive the public brief.
 - **Per-repo (one command):** run `agents-here` in a project to write a starter
   `AGENTS.md` and point the project-scoped tools at it — Claude Code
   (`CLAUDE.md`) and GitHub Copilot (`.github/copilot-instructions.md`) via
@@ -144,9 +203,11 @@ them, one repo at a time, from the same source file.
 
 devbook is a **public baseline**. Anything personal — private aliases, a work
 git identity, machine-specific agent context — belongs in `~/.dotfiles.local`,
-a **private repo** the baseline knows how to consume but never reads into
-itself (`setup.sh` only ever stages files from this checkout, so private
-content structurally cannot transit into the public layer).
+a **private repo** the baseline knows how to consume. devbook's staging loop
+copies only named files from this checkout; private composition is written to
+`~/.config/dev-env`, not back into this repository or the public staged tree.
+An executable overlay setup is trusted local code and remains outside that
+separation guarantee.
 
 To start one:
 
@@ -187,16 +248,21 @@ unwired, hooks silent (to unwire the leak-gate hook itself:
 - `dev-up` (alias installed by the zshrc block) refreshes everything in one go:
   brew packages, mise runtimes, and the Rust toolchain.
 - Re-running `./setup.sh` anytime picks up new additions to this repo — it's idempotent.
-- Agent Vault is opt-in and stateful: re-run `INSTALL_AGENT_VAULT=1 ./setup.sh` to reconcile its pinned container, and preserve both `~/.config/dev-env/agent-vault/.env` and the `devbook-agent-vault-data` volume when migrating. Never place credentials in the repo; the complete local procedure is in `agent-vault/README.md`.
+- Agent Vault is opt-in and stateful. Re-run `INSTALL_AGENT_VAULT=1 ./setup.sh`
+  to reconcile its pinned container. When migrating machines, carry both
+  `~/.config/dev-env/agent-vault/.env` and the `devbook-agent-vault-data` volume.
+  Credentials never go in the repo; the full procedure is in `agent-vault/README.md`.
 
 ## Reviewing changes with AI (dogfooding)
 
 This repo carries its own reviewer. `machine-steward-reviewer.md` is a
 steward + conservator persona for auditing infra changes, and
-`.claude/agents/machine-steward.md` registers it as a Claude Code subagent —
-so inside `claude`, any change to `setup.sh` or the dotfiles gets reviewed for
-correctness, idempotency, reversibility, and key-custody issues before it
-ships. `CLAUDE.md` makes that the default workflow rather than a thing to remember.
+`.claude/agents/machine-steward.md` registers it as a Claude Code subagent.
+Inside `claude`, changes to `setup.sh` or the dotfiles can be routed to a reviewer
+that checks correctness, idempotency, reversibility, and key custody. `CLAUDE.md`
+makes that the documented default workflow; it is a review convention, not a
+commit gate. The README and design-story rewrite includes a compact
+[adversarial/editorial review receipt](docs/reviews/2026-08-25-positioning.md).
 
 ## Notes & swaps
 

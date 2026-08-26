@@ -1,0 +1,22 @@
+name: Contract checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contracts:
+    runs-on: macos-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+      - name: Install validation tools
+        run: brew install shellcheck docker-compose
+      - name: Validate scripts and contracts
+        run: bash scripts/check.sh

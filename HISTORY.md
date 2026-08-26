@@ -2,13 +2,17 @@
 
 Major milestones only. Routine fixes and maintenance remain in the Git log.
 
-## Unreleased — Local Agent Vault
+## 2026-08-25 — v0.1.0 contract-tested baseline
 
 - Added an opt-in, loopback-only Agent Vault deployment for low-value agent API
   access, with an immutable image pin, checksum-verified macOS ARM64 CLI,
   private secret-file custody, readiness checks, and documented recovery.
 - Recorded the same-host threat model: this protects credentials from prompts
   and transcripts, not from a malicious agent on the host.
+- Documented the ownership, private-overlay, and recovery design with explicit
+  claim boundaries and an adversarial/editorial review receipt.
+- Added macOS CI and six executable contract tests for takeover-safe configs,
+  convergent marked blocks, the private sentinel gate, and Agent Vault inputs.
 
 ## 2026-07-24 — Private machine overlay
 

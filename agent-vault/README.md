@@ -1,8 +1,9 @@
 # Local Agent Vault
 
 This is an optional, local-only Agent Vault deployment for low-value agent API
-access. It keeps upstream API keys out of agent prompts and transcripts while
-letting a pre-authorized agent make requests through the broker.
+access. In the intended workflow, upstream API keys live in broker configuration
+rather than the wrapper's command line; a pre-authorized agent makes requests
+through the broker.
 
 It is not a hostile-agent boundary: the server, proxy, and agent run on the
 same Mac. Use a separate host for stronger isolation. The Compose ports are
