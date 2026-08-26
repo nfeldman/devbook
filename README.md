@@ -5,14 +5,6 @@ coding workflows. Its central contract is simple: repository-managed configs
 are symlinks; replace one with a real file and the next run leaves it alone and
 records the handoff.
 
-<p align="center">
-  <img
-    src="docs/assets/devbook-ownership-boundary.png"
-    alt="Abstract composition representing explicit ownership and constrained boundaries"
-    width="720"
-  >
-</p>
-
 Most dotfiles repositories optimize for getting onto a machine. devbook also
 designs for the second run, private state, agent behavior, and an eventual exit.
 
