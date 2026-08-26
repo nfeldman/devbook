@@ -1,3 +1,6 @@
 .DS_Store
 *.backup.*
 *.pre-*.[0-9]*
+
+# Local visual exploration; only curated assets outside this directory publish.
+docs/assets/concepts/
