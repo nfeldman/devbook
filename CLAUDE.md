@@ -40,6 +40,6 @@ intervention must be reversible and legible.
 1. Run the `machine-steward` subagent (`.claude/agents/machine-steward.md`;
    persona in `machine-steward-reviewer.md`) on any change to `setup.sh` or the
    staged dotfiles. Apply blocker/high findings before finishing.
-2. `bash scripts/check.sh` must pass. It gates shell syntax, ShellCheck,
-   Compose rendering, and the executable contract suite.
+2. `bash scripts/check.sh` must pass. It checks shell syntax and runs ShellCheck
+   and the executable contract suite.
 3. Validate, don't assert — run the tricky helper in isolation if unsure.

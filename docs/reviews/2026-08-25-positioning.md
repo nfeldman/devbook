@@ -55,6 +55,6 @@ defect. No edit was made.
 ## Mechanical result
 
 After the edits, `bash scripts/check.sh` exited zero and reported `6/6` contract
-tests. That run establishes only the checks enumerated in `docs/design.md`; it
-does not establish a fresh-machine install, adoption, productivity, or disaster
-recovery.
+tests. That run establishes only the checks enumerated in that revision's
+`docs/design.md`. Fresh-machine installation, adoption, productivity, and
+disaster recovery were outside its scope.

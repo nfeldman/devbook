@@ -30,10 +30,6 @@ agent sees the same brief.
 ## Containers, cloud, local models
 - Docker is **OrbStack** (Docker + a local Kubernetes), not Docker Desktop.
   `kubectl`, `k9s`, and `helm` are present.
-- Agent Vault is an **optional loopback-only local broker** for low-value agent
-  API access; use `agent-vault/README.md` for setup, and keep its master
-  password, agent token, and credential values out of repos, logs, URLs, and
-  transcripts.
 - Local LLMs run via **ollama** (`ollama run <model>`) — prefer it for
   offline / vendor-free inference.
 

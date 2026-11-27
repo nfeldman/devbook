@@ -2,6 +2,12 @@
 
 Major milestones only. Routine fixes and maintenance remain in the Git log.
 
+## 2026-11-26 — Dependency cleanup
+
+- Retired the optional Agent Vault integration and removed its Docker Compose
+  validation dependency.
+- Removed Zed from the default install.
+
 ## 2026-08-25 — v0.1.0 contract-tested baseline
 
 - Added an opt-in, loopback-only Agent Vault deployment for low-value agent API

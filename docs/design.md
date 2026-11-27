@@ -52,8 +52,6 @@ staging and composition paths.
 | Managed marked blocks converge instead of multiplying. | `ensure_marked_block()` removes the prior marked region, preserves surrounding content, and writes one current block; the contract suite runs the transition twice. | Full-machine idempotence across every future Homebrew, mise, rustup, or GUI application state. |
 | Private agent context is kept out of the public staging path. | Staging copies only named files from this checkout; private composition writes to `~/.config/dev-env/AGENTS.composed.md` and then sets mode `600`. | Containment from a malicious or mistaken private overlay script, which is trusted host code. This transition is inspected in code but not yet exercised by the contract suite. |
 | A configured private sentinel can stop a matching staged change. | The hook reads a machine-private fixed-string list; the contract suite observes both an allowed staged change and a rejected one. | General secret detection. With no sentinel list, the hook intentionally does nothing; a secret not named by the list is outside its coverage. |
-| The Agent Vault wrapper narrows how broker connection material enters an agent process. | The broker token stays out of command-line arguments; the wrapper accepts only three connection fields from an owned mode-`600` regular file and rejects unexpected keys and documented shell metacharacters. Setup installs the version-named CLI only after SHA-256 verification; the wrapper itself checks only that its selected CLI path is executable. | Isolation from a malicious same-host process, proof of the broker's upstream-credential substitution, protection for high-value credentials, or automatic integration with agents that do not run through the wrapper. |
-| Vault recovery requires matching data and key custody. | By default, setup refuses to proceed when either the persistent volume or master-password file exists without the other; the contract suite observes both refusals. The password-without-volume case has a documented override for confirmed disposable data. | A successful disaster recovery. The documented backup still has to be created and restore-tested by the operator. |
 | The repository defines a specialized AI review lane for infrastructure changes. | The reviewer contract and repository instruction make the steward/conservator lane explicit. | That the lane always runs, or that a reviewer is correct merely because it ran. Findings still require validation against the artifacts and environment. |
 
 ## Design case 1: three stores, three fates
@@ -97,22 +95,7 @@ scrolled away. This contract applies to whole-file configurations. Files that
 support inclusion use a narrower reversible mechanism: one Git include or one
 marked block surrounded by user-owned content.
 
-## Design case 3: a security boundary that admits where it ends
-
-The optional vault is meant to reduce accidental credential disclosure during
-ordinary agent use. The container is digest-pinned, the matching macOS CLI is
-checksum-verified at installation, services bind to loopback, and the wrapper
-loads only the broker address, agent token, and vault name from a restricted
-file. The wrapper then execs the selected version-named CLI; it does not repeat
-the install-time checksum verification.
-
-None of that turns the host into a hostile-agent boundary. A malicious process
-running as the user may still inspect local state or bypass the wrapper. Stronger
-isolation requires another host or a more restrictive execution environment.
-Naming that limit is part of the design: the mechanism protects a narrower and
-useful workflow without borrowing the language of a sandbox.
-
-## Design case 4: an agent reviewer with two duties in tension
+## Design case 3: an agent reviewer with two duties in tension
 
 The machine reviewer combines an infrastructure steward, who prizes current
 tools and low friction, with a preservation conservator, who prizes reversibility,
@@ -132,14 +115,10 @@ finding rejected after verification.
 tests write only to a disposable temporary workspace. It currently runs:
 
 - Bash syntax checks and ShellCheck over every repository shell entry point;
-- Docker Compose rendering with a non-secret placeholder;
-- a green and observed-red case for the private sentinel gate;
+- an accepted change and a rejected change for the private sentinel gate; and
 - real-file takeover and marked-block convergence checks against functions
-  extracted from the live installer;
-- both incomplete Agent Vault recovery-pair refusals; and
-- accepted and rejected Agent Vault wrapper inputs.
+  extracted from the installer.
 
 The suite does not install packages or mutate the runner's global configuration.
 A complete release check still needs a real macOS machine: run setup from a clean
-baseline, run it again, inspect the manifest, exercise any GUI handoffs, and test
-the documented recovery procedure when the Agent Vault feature changes.
+baseline, run it again, inspect the manifest, and exercise any GUI handoffs.

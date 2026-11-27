@@ -8,8 +8,8 @@ only when you decide a task needs it.
 
 1. **Default local.** Ollama is the vendor-free runtime. A capable open coding model
    runs entirely on your Mac — no API key, no per-keystroke network, no account.
-2. **Keep every tool swappable.** Prefer tools whose model is a config value (Zed's
-   assistant, opencode, most OpenAI-compatible clients) over tools wired to one vendor.
+2. **Keep every tool swappable.** Prefer tools whose model is a config value
+   (opencode, most OpenAI-compatible clients) over tools wired to one vendor.
    Switching models should be an edit, never a reinstall.
 3. **The one vendor-bound tool is temporary — and has a named exit.** **Claude Code**
    (and the Claude desktop app) is Anthropic's own client, vendor-bound by design. It
@@ -59,9 +59,6 @@ export OPENAI_BASE_URL=http://127.0.0.1:11434/v1      # generic OpenAI-compatibl
 # Ollama directly (brew install opencode). The modern "neutral agent" pick;
 # aider still works too. No API key needed; fully offline after the pull.
 ```
-
-**Zed** — set the assistant provider to Ollama in Zed's settings (it speaks to a local
-Ollama endpoint directly).
 
 **Optional gateway (one switch for everything).** If you want *all* tools to point at a
 single endpoint while you swap the backing model — local or any cloud — from one file,

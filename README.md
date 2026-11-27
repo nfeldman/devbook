@@ -22,10 +22,6 @@ designs for the second run, private state, agent behavior, and an eventual exit.
   coding agents which runtimes, package managers, containers, and secret-handling
   conventions the machine actually uses. A separate infrastructure reviewer
   makes tradeoffs between current tooling and long-term recoverability explicit.
-- **Security claims stop at their real boundary.** The optional Agent Vault
-  wrapper admits only three connection fields from an owned mode-`600` file,
-  keeps its broker token out of command-line arguments, and confines the API and
-  proxy to loopback. It does not contain a malicious process on the same host.
 
 ## Quick start
 
@@ -59,10 +55,9 @@ bash scripts/check.sh
 
 [![Contract checks](https://github.com/nfeldman/devbook/actions/workflows/contract-checks.yml/badge.svg)](https://github.com/nfeldman/devbook/actions/workflows/contract-checks.yml)
 
-That command gates Bash syntax, ShellCheck, rendered Compose configuration, and
-six contract tests. The tests observe both success and failure paths for the
-private sentinel gate, real-file takeover, marked-block convergence, incomplete
-vault recovery pairs, and the Agent Vault wrapper's input handling.
+That command checks Bash syntax and runs ShellCheck and three contract tests.
+The tests cover both paths through the private sentinel gate, real-file takeover,
+and marked-block convergence.
 
 CI does not reproduce a fresh Mac installation, and does not claim to. The
 installer's package-manager paths, GUI applications, and a full second machine
@@ -101,7 +96,6 @@ threat boundaries are in [the design notes](docs/design.md).
 | `AGENTS.md` | imported by `~/.claude/CLAUDE.md` | Machine-wide brief for AI coding agents: which tools are here and how to use them. |
 | `MODELS.md` | — | Model-sovereignty posture: local-first AI, swappable vendors. |
 | `HISTORY.md` | — | Sparse major-milestone history; routine detail remains in Git history. |
-| `agent-vault/` | — | Optional pinned local broker and mode-checked wrapper; its README defines the boundary it does and does not hold. |
 | `machine-steward-reviewer.md` | — | Reusable reviewer persona for infra changes (see below). |
 | `CLAUDE.md` + `.claude/agents/` | — | Wires Claude Code into this repo's conventions and reviewer. |
 | `githooks/pre-commit` | wired via `core.hooksPath` | Sentinel leak gate: blocks commits matching private patterns (the patterns live outside this repo — see Extending). |
@@ -139,12 +133,10 @@ fails loudly instead of being silently lost on the next run.
 **Containers / DevOps**
 - **OrbStack** — fast, light Docker Desktop replacement (Docker + a local Kubernetes). Big battery/RAM win.
 - `kubectl`, `k9s` (cluster TUI), `helm`.
-- **Agent Vault** — optional loopback-only credential broker for low-value agent API access. Enable with `INSTALL_AGENT_VAULT=1 ./setup.sh`; see `agent-vault/README.md` for the threat model and recovery contract.
 
 **AI-forward**
 - **Ollama** — run LLMs locally, vendor-free (`ollama pull qwen3-coder:30b`, `ollama run ...`). Your sovereign default; see `MODELS.md` for picks by RAM tier.
 - **Claude Code** — Anthropic's agentic CLI, installed via the official native installer (signed, auto-updating, no Node dependency). Run `claude` in any repo. The one intentional vendor tool, balanced by keeping everything else local-capable.
-- **Zed** — fast, AI-native editor (its assistant can point at your local Ollama too).
 - **Agent context** (`AGENTS.md`) — a machine-wide brief that tells any coding agent which tools are installed here and how you expect them used (mise, uv, `rg`/`fd`, OrbStack, `op`, …). Wired into Claude Code globally; fan it out per-repo with `agents-here`. See below.
 - No cloud-agent CLI is installed by default — add a neutral one later (e.g. **opencode**: open source, bring-your-own-model), pointed at Ollama first. See `MODELS.md`.
 
@@ -159,7 +151,6 @@ fails loudly instead of being silently lost on the next run.
 4. **atuin** (optional): `atuin register` to sync/encrypt history across machines, or just use it locally.
 5. **Ollama**: `ollama pull qwen3-coder:30b` (32 GB RAM; see `MODELS.md` for the 16 GB and 64 GB+ picks).
 6. **Claude Code**: run `claude` in a project and follow the login prompt.
-7. **Agent Vault (optional)**: start OrbStack, run `INSTALL_AGENT_VAULT=1 ./setup.sh`, save the generated master password in 1Password without printing it, then complete the one-time setup in `agent-vault/README.md`.
 
 ## Per-project workflow (the modern flow)
 
@@ -191,12 +182,12 @@ expects tools to be used.
 - **Per-repo (one command):** run `agents-here` in a project to write a starter
   `AGENTS.md` and point the project-scoped tools at it — Claude Code
   (`CLAUDE.md`) and GitHub Copilot (`.github/copilot-instructions.md`) via
-  symlink. **Zed, Cursor, and Codex read `AGENTS.md` natively**, so they need
+  symlink. **Cursor and Codex read `AGENTS.md` natively**, so they need
   nothing. Real (non-symlink) files are skipped, never clobbered.
 
 Why only Claude Code gets the *machine-global* wiring: it's the one agent
-devbook installs that has a true user-level memory file. Copilot, Zed, and
-Cursor are project-scoped by design — `agents-here` is the honest way to reach
+devbook installs that has a true user-level memory file. Copilot and
+Cursor are project-scoped here, and `agents-here` provides a way to reach
 them, one repo at a time, from the same source file.
 
 ## Extending — the private overlay (`~/.dotfiles.local`)
@@ -248,10 +239,6 @@ unwired, hooks silent (to unwire the leak-gate hook itself:
 - `dev-up` (alias installed by the zshrc block) refreshes everything in one go:
   brew packages, mise runtimes, and the Rust toolchain.
 - Re-running `./setup.sh` anytime picks up new additions to this repo — it's idempotent.
-- Agent Vault is opt-in and stateful. Re-run `INSTALL_AGENT_VAULT=1 ./setup.sh`
-  to reconcile its pinned container. When migrating machines, carry both
-  `~/.config/dev-env/agent-vault/.env` and the `devbook-agent-vault-data` volume.
-  Credentials never go in the repo; the full procedure is in `agent-vault/README.md`.
 
 ## Reviewing changes with AI (dogfooding)
 
@@ -276,7 +263,6 @@ commit gate. The README and design-story rewrite includes a compact
   repositories still need a portable hook and distribution contract. Reconsider after those
   are resolved and the usual idempotency, clean-export, and README-sync checks pass.
 - Prefer **WezTerm** over Ghostty? Replace the Ghostty line with `brew_cask wezterm` and skip `ghostty.config`.
-- Don't want Zed? Delete the `brew_cask zed` line.
 - Already have a browser you love? Delete the `brew_cask firefox` line.
 - Want tmux instead of Zellij? Swap `brew_formula zellij` for `brew_formula tmux` (configs differ).
 - Everything here is Homebrew-managed: `brew upgrade` keeps it all current.

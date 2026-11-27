@@ -4,3 +4,6 @@
 
 # Local visual exploration; only curated assets outside this directory publish.
 docs/assets/concepts/
+
+# Keep local configuration and backups from the retired Agent Vault integration private.
+/agent-vault/

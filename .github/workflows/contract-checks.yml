@@ -16,7 +16,7 @@ jobs:
     steps:
       - name: Check out the repository
         uses: actions/checkout@v4
-      - name: Install validation tools
-        run: brew install shellcheck docker-compose
+      - name: Install ShellCheck
+        run: brew install shellcheck
       - name: Validate scripts and contracts
         run: bash scripts/check.sh

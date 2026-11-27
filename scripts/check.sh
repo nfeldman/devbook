@@ -12,7 +12,6 @@ fi
 
 scripts=(
   setup.sh
-  agent-vault/run.sh
   githooks/pre-commit
   scripts/check.sh
   tests/contracts.sh
@@ -25,18 +24,6 @@ done
 
 printf 'Running ShellCheck (%d files)\n' "${#scripts[@]}"
 shellcheck -s bash -S warning "${scripts[@]}"
-
-printf 'Rendering the Agent Vault Compose configuration\n'
-if docker compose version >/dev/null 2>&1; then
-  AGENT_VAULT_MASTER_PASSWORD=contract-check-placeholder \
-    docker compose --file agent-vault/compose.yaml config --quiet
-elif command -v docker-compose >/dev/null 2>&1; then
-  AGENT_VAULT_MASTER_PASSWORD=contract-check-placeholder \
-    docker-compose --file agent-vault/compose.yaml config --quiet
-else
-  printf 'Docker Compose is required to validate agent-vault/compose.yaml\n' >&2
-  exit 1
-fi
 
 bash tests/contracts.sh
 

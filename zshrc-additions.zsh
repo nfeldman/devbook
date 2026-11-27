@@ -61,8 +61,8 @@ alias dev-up='brew update && brew upgrade && mise upgrade && rustup update'
 # ---- agents-here: one AGENTS.md, every agent — for the CURRENT repo ---------
 # Machine-wide context is wired globally by setup.sh. This is PER-PROJECT: it
 # writes a starter AGENTS.md (if absent) and points the tools that insist on
-# their own filename at it, so Claude Code and Copilot read the same file. Zed,
-# Cursor, and Codex read AGENTS.md natively, so they need nothing. Existing REAL
+# their own filename at it, so Claude Code and Copilot read the same file.
+# Cursor and Codex read AGENTS.md natively, so they need nothing. Existing REAL
 # files are never clobbered — it skips them so you can merge by hand.
 agents-here() {
   emulate -L zsh
